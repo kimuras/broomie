@@ -1,0 +1,67 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+#AC_PREREQ([2.63])
+AC_INIT([broomie], [0.1.8], [kimura.shunya@gmail.com])
+AC_CONFIG_SRCDIR([config.h.in])
+
+AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE(broomie, 0.1.8)
+
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_CPP
+AC_LANG(C++)
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+#AC_PROG_RANLIB
+
+# Checks for libraries.
+
+AC_PROG_LIBTOOL
+AC_CHECK_LIB(tokyocabinet, tchdbnew)
+AC_CHECK_LIB(gtest, main)
+AC_CHECK_LIB(fcgi, FCGI_Accept)
+AC_CHECK_LIB(oll, main)
+
+# Checks for header files.
+
+AC_CHECK_HEADER(tcutil.h, true, AC_MSG_ERROR([tcutil.h is required]))
+AC_CHECK_HEADER(tchdb.h, true, AC_MSG_ERROR([tchdb.h is required]))
+#AC_CHECK_HEADER(oll/oll.h, true, AC_MSG_ERROR([oll/oll.h is required]))
+AC_CHECK_HEADER(tinysvm.h, true, AC_MSG_ERROR([tinysvm.h is required]))
+AC_CHECK_HEADER(TinySVM/misc.h, true, AC_MSG_ERROR([TinySVM/misc.h is required]))
+AC_CHECK_HEADER(TinySVM/model.h, true, AC_MSG_ERROR([TinySVM/model.h is required]))
+AC_CHECK_HEADER(TinySVM/example.h, true, AC_MSG_ERROR([TinySVM/example.h is required]))
+AC_CHECK_HEADER(TinySVM/base_example.h, true, AC_MSG_ERROR([TinySVM/base_example.h is required]))
+AC_CHECK_HEADER(TinySVM/param.h, true, AC_MSG_ERROR([TinySVM/param.h is required]))
+AC_CHECK_HEADER(gtest/gtest.h, true, AC_MSG_ERROR([gtest/gtest.h is required]))
+AC_CHECK_HEADER(fcgi_stdio.h, true, AC_MSG_ERROR([fcgi_stdio.h is required]))
+
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+AC_HEADER_STDC
+AC_HEADER_STDBOOL
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_STAT
+AC_HEADER_DIRENT
+AC_PROG_RANLIB
+AC_STRUCT_TM
+
+
+# Checks for library functions.
+
+AC_CHECK_FUNCS([mkdir rmdir strchr strrchr strstr])
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
+AC_OUTPUT
