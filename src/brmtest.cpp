@@ -27,6 +27,7 @@ const std::string CONFIG_NAME          = "broomie.conf";
 const std::string TEST_DIR_PATH        = "/tmp/broomie_test/";
 const std::string TRAIN_PATH           = "../test_data/train";
 const std::string TEST_PATH            = "../test_data/test";
+const unsigned int ZERO                = 0;
 const unsigned int TEST_NUM            = 100;
 const unsigned int CLASSIFIER_TYPE_NUM = 1;   /* bayes only */
 
@@ -42,7 +43,7 @@ namespace broomie {
         err = false;
       }
     }
-    closedir(dir);
+    //closedir(dir);
     return !err;
   }
 
@@ -131,7 +132,7 @@ namespace broomie {
       }
       int classifierMethod = 0;
       std::string line;
-      while(getline(confifs, line)){
+      while(std::getline(confifs, line)){
         std::vector<std::string> features = broomie::util::split(line, "\t");
         std::cout << features[0] << ":" << features[1] << std::endl;
         if(features[0] == DEFINE_METHOD_NAME){
@@ -317,7 +318,7 @@ namespace broomie {
     for(unsigned int i = 0; i < TEST_NUM; i++){
       double point = 0.0;
       std::string feature = doc->getFeature(i, point);
-      ASSERT_GT(feature.size(), 0);
+      ASSERT_GT(feature.size(), ZERO);
       ASSERT_GT(point,  0.0);
     }
 
@@ -325,13 +326,13 @@ namespace broomie {
       double point = 0.0;
       std::string feature = doc->getFeature(i, point);
       if(i < TEST_NUM){
-        ASSERT_GT(feature.size(), 0);
+        ASSERT_GT(feature.size(), ZERO);
         ASSERT_GT(point,  0.0);
       } else if(i == TEST_NUM){
-        ASSERT_EQ(feature.size(), 0);
+        ASSERT_EQ(feature.size(), ZERO);
         ASSERT_EQ(point,  0.0);
       } else {
-        ASSERT_EQ(feature.size(), 0);
+        ASSERT_EQ(feature.size(), ZERO);
         ASSERT_EQ(point,  0.0);
       }
     }
@@ -339,31 +340,31 @@ namespace broomie {
     double point = 0.0;
     std::string feature("");
     feature = doc->getFeature(-1, point);
-    ASSERT_EQ(feature.size(), 0);
+    ASSERT_EQ(feature.size(), ZERO);
     ASSERT_EQ(point,  0.0);
     feature = "";
     point = 0.0;
 
     feature = doc->getFeature(0, point);
-    ASSERT_GT(feature.size(), 0);
+    ASSERT_GT(feature.size(), ZERO);
     ASSERT_GT(point,  0.0);
     feature = "";
     point = 0.0;
 
     feature = doc->getFeature((TEST_NUM - 1), point);
-    ASSERT_GT(feature.size(), 0);
+    ASSERT_GT(feature.size(), ZERO);
     ASSERT_GT(point,  0.0);
     feature = "";
     point = 0.0;
 
     feature = doc->getFeature(TEST_NUM, point);
-    ASSERT_EQ(feature.size(), 0);
+    ASSERT_EQ(feature.size(), ZERO);
     ASSERT_EQ(point,  0.0);
     feature = "";
     point = 0.0;
 
     feature = doc->getFeature((TEST_NUM + 1), point);
-    ASSERT_EQ(feature.size(), 0);
+    ASSERT_EQ(feature.size(), ZERO);
     ASSERT_EQ(point,  0.0);
     feature = "";
     point = 0.0;
@@ -395,7 +396,8 @@ namespace broomie {
         result[j].point += 1;
       }
       broomie::ResultSet* rs = new broomie::ResultSet(result, i);
-      ASSERT_EQ(i, rs->getResultSetNum());
+      int iBuf = i;
+      ASSERT_EQ(iBuf, rs->getResultSetNum());
       delete rs;
     }
   }
@@ -412,20 +414,20 @@ namespace broomie {
     for(int j = 0; j < rs->getResultSetNum(); j++){
       float point;
       std::string className = rs->getResult(j, point);
-      ASSERT_GT(className.size(), 0);
+      ASSERT_GT(className.size(), ZERO);
       ASSERT_GT(point, 0);
     }
 
     float point;
     std::string className;
     className = rs->getResult(rs->getResultSetNum() - 1, point);
-    ASSERT_GT(className.size(), 0);
+    ASSERT_GT(className.size(), ZERO);
     ASSERT_GT(point, 0);
     className = rs->getResult(rs->getResultSetNum(), point);
-    ASSERT_EQ(className.size(), 0);
+    ASSERT_EQ(className.size(), ZERO);
     ASSERT_EQ(point, 0.0);
     className = rs->getResult(-1, point);
-    ASSERT_EQ(className.size(), 0);
+    ASSERT_EQ(className.size(), ZERO);
     ASSERT_EQ(point, 0.0);
     delete rs;
   }
@@ -448,19 +450,20 @@ namespace broomie {
     ASSERT_EQ(cl.getClassSettingNum(), 0);
     ASSERT_FALSE(cl.checkErr());
     std::string errMessage = cl.traceErr();
-    ASSERT_EQ(errMessage.size(), 0);
+    ASSERT_EQ(errMessage.size(), ZERO);
 
     std::string basePath2("");
     broomie::Classifier cl2(modelFactory, basePath2);
     ASSERT_EQ(cl2.getClassSettingNum(), 0);
     ASSERT_TRUE(cl2.checkErr());
     errMessage = cl2.traceErr();
-    ASSERT_NE(errMessage.size(), 0);
+    ASSERT_NE(errMessage.size(), ZERO);
 
     testFINISH();
 
     delete modelFactory;
   }
+
 
   TEST(broomie, Classifier_beginMakingModel){
     std::string basePath = TEST_DIR_PATH;
@@ -490,7 +493,7 @@ namespace broomie {
       std::string errMessage("");
       ASSERT_TRUE(cl2.checkErr());
       errMessage = cl2.traceErr();
-      ASSERT_NE(errMessage.size(), 0);
+      ASSERT_NE(errMessage.size(), ZERO);
       cl2.endMakingModel();
       testFINISH();
     }

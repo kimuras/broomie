@@ -28,8 +28,8 @@ const std::string TRAIN_PATH           = "../test_data/train";
 const std::string TEST_PATH            = "../test_data/test";
 const unsigned int TEST_NUM            = 100;
 
-int numPosTrainBuf = 0;
-int numNegTrainBuf = 0;
+unsigned int numPosTrainBuf = 0;
+unsigned int numNegTrainBuf = 0;
 double sumPosValBuf = 0.0;
 double sumNegValBuf = 0.0;
 int uniqValBuf = 0;
