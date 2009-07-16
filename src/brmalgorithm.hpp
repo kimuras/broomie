@@ -1,10 +1,3 @@
-#include <oll/oll.hpp>
-#include <tinysvm.h>
-#include <TinySVM/misc.h>
-#include <TinySVM/model.h>
-#include <TinySVM/example.h>
-#include <TinySVM/base_example.h>
-#include <TinySVM/param.h>
 #include "libbrm.hpp"
 #include "brmNB.hpp"
 

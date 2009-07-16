@@ -31,13 +31,6 @@ AC_CHECK_LIB(oll, main)
 
 AC_CHECK_HEADER(tcutil.h, true, AC_MSG_ERROR([tcutil.h is required]))
 AC_CHECK_HEADER(tchdb.h, true, AC_MSG_ERROR([tchdb.h is required]))
-#AC_CHECK_HEADER(oll/oll.h, true, AC_MSG_ERROR([oll/oll.h is required]))
-AC_CHECK_HEADER(tinysvm.h, true, AC_MSG_ERROR([tinysvm.h is required]))
-AC_CHECK_HEADER(TinySVM/misc.h, true, AC_MSG_ERROR([TinySVM/misc.h is required]))
-AC_CHECK_HEADER(TinySVM/model.h, true, AC_MSG_ERROR([TinySVM/model.h is required]))
-AC_CHECK_HEADER(TinySVM/example.h, true, AC_MSG_ERROR([TinySVM/example.h is required]))
-AC_CHECK_HEADER(TinySVM/base_example.h, true, AC_MSG_ERROR([TinySVM/base_example.h is required]))
-AC_CHECK_HEADER(TinySVM/param.h, true, AC_MSG_ERROR([TinySVM/param.h is required]))
 AC_CHECK_HEADER(gtest/gtest.h, true, AC_MSG_ERROR([gtest/gtest.h is required]))
 AC_CHECK_HEADER(fcgi_stdio.h, true, AC_MSG_ERROR([fcgi_stdio.h is required]))
 
