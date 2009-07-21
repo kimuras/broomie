@@ -21,6 +21,7 @@
 namespace broomie {
 
   typedef std::vector<std::string> CList;
+  typedef std::map<std::string, int> CMap;
 
   /* constant variables */
   const std::string DEFINE_BASE_DIR_NAME     = "BASEDIR";
@@ -29,6 +30,16 @@ namespace broomie {
   const std::string WORD_DIC_DB_NAME         = "wordDic.hdb";
   const std::string WORD_DIC_INVERSE_DB_NAME = "wordDicInverse.hdb";
   const std::string CLASS_LIST_DB_NAME       = "classList.hdb";
+
+  /*!
+    @brief Region for saving each classify result.
+    - name : The string object of class name.
+    - point : The point of classify result of the class.
+   */
+  struct Result {
+    std::string name;
+    double point;
+  };
 
   enum {
     BROOMIESUCCESS,        /* success*/
@@ -45,6 +56,7 @@ namespace broomie {
   };
 
   const char* codecErrMessage(int ecode);
+  int compareResult(Result* a, Result* b);
 
   /*****************************************************************************
    * Documnet object
@@ -224,17 +236,6 @@ namespace broomie {
    ****************************************************************************/
 
   /*!
-    @brief Region for saving each classify result.
-    - name : The string object of class name.
-    - point : The point of classify result of the class.
-   */
-  struct Result {
-    std::string name;
-    double point;
-  };
-
-
-  /*!
     @brief Region for saving all classify result.
     - results : Array of Result object.
     - num : Num of element in results(num of class).
@@ -243,7 +244,7 @@ namespace broomie {
 
   public:
     /*! @brief ResultSet object Constructor. */
-    ResultSet(const Result results[], int num);
+    ResultSet(Result results[], int num);
 
 
     /*! @brief ResultSet object Destructor. */
@@ -264,7 +265,6 @@ namespace broomie {
       @return Class name
     */
     const std::string getResult(int index, float& point);
-
 
   private:
     /*! @brief Classify results of each class. */
@@ -393,7 +393,7 @@ namespace broomie {
 
 
     /*! @brief Accsessor for classList */
-    std::vector<std::string>* getClassList();
+    CList* getClassList();
 
 
     /*!

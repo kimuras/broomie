@@ -2,11 +2,24 @@
 # Process this file with autoconf to produce a configure script.
 
 #AC_PREREQ([2.63])
-AC_INIT([broomie], [0.1.8], [kimura.shunya@gmail.com])
+AC_INIT([broomie], [0.1.9], [kimura.shunya@gmail.com])
 AC_CONFIG_SRCDIR([config.h.in])
 
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE(broomie, 0.1.8)
+AM_INIT_AUTOMAKE(broomie, 0.1.9)
+
+# Options
+AC_ARG_ENABLE(interface,
+        AS_HELP_STRING([--enable-interface], [build interface]),
+        enable_interface="$enableval", enable_interface="no"
+        )
+AM_CONDITIONAL(ENABLE_INTERFACE, test "$enable_interface" = "yes")
+
+AC_ARG_ENABLE(test,
+        AS_HELP_STRING([--enable-test], [build test tools. need gtest.]),
+        enable_test="$enableval", enable_test="no"
+        )
+AM_CONDITIONAL(ENABLE_TEST, test "$enable_test" = "yes")
 
 
 # Checks for programs.
@@ -20,23 +33,26 @@ AC_PROG_MAKE_SET
 #AC_PROG_RANLIB
 
 # Checks for libraries.
-
 AC_PROG_LIBTOOL
 AC_CHECK_LIB(tokyocabinet, tchdbnew)
-AC_CHECK_LIB(gtest, main)
-AC_CHECK_LIB(fcgi, FCGI_Accept)
-AC_CHECK_LIB(oll, main)
 
 # Checks for header files.
 
 AC_CHECK_HEADER(tcutil.h, true, AC_MSG_ERROR([tcutil.h is required]))
 AC_CHECK_HEADER(tchdb.h, true, AC_MSG_ERROR([tchdb.h is required]))
-AC_CHECK_HEADER(gtest/gtest.h, true, AC_MSG_ERROR([gtest/gtest.h is required]))
-AC_CHECK_HEADER(fcgi_stdio.h, true, AC_MSG_ERROR([fcgi_stdio.h is required]))
+
+if [ test $enable_interface = "yes" ]; then
+   AC_CHECK_LIB(fcgi, FCGI_Accept)
+   AC_CHECK_HEADER(fcgi_stdio.h, true, AC_MSG_ERROR([fcgi_stdio.h is required]))
+fi
+
+if [ test $enable_test = "yes" ]; then
+   AC_CHECK_LIB(gtest, main)
+   AC_CHECK_HEADER(gtest/gtest.h, true, AC_MSG_ERROR([gtest/gtest.h is required]))  
+fi
 
 
 # Checks for typedefs, structures, and compiler characteristics.
-
 AC_HEADER_STDC
 AC_HEADER_STDBOOL
 AC_TYPE_UINT32_T

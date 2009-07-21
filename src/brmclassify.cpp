@@ -1,9 +1,7 @@
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
-#include <utility>
-#include <iterator>
 
-const std::string CONFIG_NAME = "broomie.conf";
+const std::string CONFIG_NAME  = "broomie.conf";
 const std::string METHOD_BAYES = "bayes";
 
 namespace broomie {
@@ -53,9 +51,11 @@ namespace broomie {
         for(unsigned int j = 0; j < (*classList).size(); j++){
           itr = accuracyBuf.find((*classList)[i]);
           if(itr->first == (*classList)[j]){
-            trueCnt[(*classList)[j]] = static_cast<double>(itr->second[(*classList)[j]]);
+            trueCnt[(*classList)[j]] =
+              static_cast<double>(itr->second[(*classList)[j]]);
           } else {
-            falseCnt[(*classList)[j]] += static_cast<double>(itr->second[(*classList)[j]]);
+            falseCnt[(*classList)[j]] +=
+              static_cast<double>(itr->second[(*classList)[j]]);
           }
         }
       }
@@ -64,9 +64,8 @@ namespace broomie {
         double numTrue = trueCnt[(*classList)[i]];
         double numFalse = falseCnt[(*classList)[i]];
         double precisionBuf = 0.0;
-        if(numTrue > 0){
+        if(numTrue > 0)
           precisionBuf= numTrue / (numFalse + numTrue);
-        }
         (*precision)[(*classList)[i]] = precisionBuf;
         precisionAve += precisionBuf;
       }
@@ -75,7 +74,8 @@ namespace broomie {
       return precision;
     }
 
-    void printAccuracy(ClassVal* precision, ClassVal* recall, ClassResult& accuracyBuf, CList* classList)
+    void printAccuracy(ClassVal* precision, ClassVal* recall,
+                       ClassResult& accuracyBuf, CList* classList)
     {
       std::cerr << "=== Detailed Accuracy By Class ===" << std::endl;
       printf("\tpre\trec\tf-m\tclass\n");
@@ -88,7 +88,8 @@ namespace broomie {
         if(pre > 0 && rec > 0) {
           fMeasure = (2 * (pre * rec)) / (pre + rec);
         }
-        printf("\t%.3f\t%.3f\t%.3f\t%s\n", pre, rec, fMeasure, (*classList)[i].c_str());
+        printf("\t%.3f\t%.3f\t%.3f\t%s\n", pre, rec,
+               fMeasure, (*classList)[i].c_str());
       }
       double preAve = (*precision)["PRECISION_AVERAGE"];
       double recAve = (*recall)["RECALL_AVERAGE"];
@@ -119,7 +120,8 @@ namespace broomie {
     void printSummary(int collectNum, int numTest)
     {
       std::cout << "=== classify result ===" << std::endl;
-      printf("Correctly Classified Instance:\t%d\t%.3f\n", collectNum, (static_cast<double>(collectNum)/numTest));
+      printf("Correctly Classified Instance:\t%d\t%.3f\n", collectNum,
+             (static_cast<double>(collectNum)/numTest));
       printf("Number of test examples:\t%d\n\n", numTest);
     }
 
@@ -146,7 +148,8 @@ namespace broomie {
           if(features[1] == METHOD_BAYES){ // algorithm
             classifierMethod = broomie::BAYES;
           } else {
-            std::cerr << "chose classifier method error: " << features[1] <<  std::endl;
+            std::cerr << "chose classifier method error: "
+                      << features[1] <<  std::endl;
             return false;
           }
         }
@@ -156,54 +159,65 @@ namespace broomie {
         std::cerr << errMessage << std::endl;
         return false;
       }
+
+      CList* classList = cl.getClassList();
+      CMap classMap;
+      for(unsigned int i = 0; i < (*classList).size(); i++){
+        classMap[(*classList)[i]] = 1;
+      }
+
       int cnt = 0;
       int collectNum = 0;
       ClassResult accuracyBuf;
       while(std::getline(ifs, line)){
         std::vector<std::string> features = broomie::util::split(line, "\t");
-        broomie::Document *doc = new broomie::Document((features.size() - 1) / 2);
-        std::string className;
-        std::string feature;
-        if(mode == TEST){
-          for(unsigned int i = 0; i < features.size(); i++){
-            if(i < 1){
-              className = features[i];
-              std::cout << "correct answer:" << className << std::endl;
-            } else if(i % 2 > 0){
-              feature = features[i];
-            } else {
-              double point = atof(features[i].c_str());
-              doc->addFeature(feature, point);
+        broomie::Document *doc =
+          new broomie::Document((features.size() - 1) / 2);
+        std::string docAttr("");
+        std::string feature("");
+        for(unsigned int i = 0; i < features.size(); i++){
+          if(i < 1){
+            docAttr = features[i];
+            if(mode == TEST){
+              if(classMap.find(docAttr) == classMap.end()){
+                std::cerr << "unknown class:[" << docAttr << "]" << std::endl;
+                std::cerr << "check class names of test data or traning data"
+                          << std::endl;
+                return false;
+              }
+              std::cout << "correct answer:" << docAttr << std::endl;
+            } else if(mode == CLASSIFY){
+              std::cout << docAttr;
             }
-          }
-        } else if(mode == CLASSIFY){
-          for(unsigned int i = 0; i < features.size() - 1; i++){
-            if(i % 2 == 0){
-              feature = features[i];
-            } else {
-              double point = atof(features[i].c_str());
-              doc->addFeature(feature, point);
-            }
+          } else if(i % 2 > 0){
+            feature = features[i];
+          } else {
+            double point = atof(features[i].c_str());
+            doc->addFeature(feature, point);
           }
         }
         broomie::ResultSet *rs = cl.classify(*doc);
         float maxPoint = 0.0;
-        std::string maxPointClass;
+        std::string maxPointClass("");
         for(int i = 0; i < rs->getResultSetNum(); i++){
           float point;
           std::string className = rs->getResult(i, point);
-          if(mode == TEST){
-            std::cout << "  " << className << ":" << point << std::endl;
-          }
-          if(maxPoint < point || maxPoint == 0.0) {
+          if(i == 0){
+            accuracyBuf[docAttr][className] += 1;
             maxPoint = point;
             maxPointClass = className;
           }
+          if(mode == TEST){
+            std::cout << "  " << className << ":" << point << std::endl;
+          } else if(mode == CLASSIFY){
+            std::cout << "\t" << className << "\t" << point;
+          }
         }
-        accuracyBuf[className][maxPointClass] += 1;
+
         if(mode == TEST){
-          std::cout << "system answer:" << maxPointClass + ':' << maxPoint << std::endl;
-          if(maxPointClass == className) {
+          std::cout << "system answer:" << maxPointClass + ':'
+                    << maxPoint << std::endl;
+          if(maxPointClass == docAttr) {
             std::cout << "==> true" << std::endl;
             std::cout << std::endl;
             collectNum++;
@@ -214,12 +228,6 @@ namespace broomie {
             std::cout << std::endl;
           }
         } else if(mode == CLASSIFY){
-          std::cout << maxPointClass;
-          for(int i = 0; i < doc->getFeatureNum(); i++){
-            double point;
-            std::string feature = doc->getFeature(i, point);
-            std::cout << "\t" << feature << "\t" << point;
-          }
           std::cout << std::endl;
         }
         delete rs;
@@ -228,14 +236,12 @@ namespace broomie {
       }
 
       if(mode == TEST){
-        CList* classList = cl.getClassList();
         ClassVal* precision = getPrecision(accuracyBuf, classList);
         ClassVal* recall = getRecall(accuracyBuf, classList);
         printSummary(collectNum, cnt);
         printAccuracy(precision, recall, accuracyBuf, classList);
         delete recall;
         delete precision;
-        delete classList;
       }
       ifs.close();
       if(!cl.endClassification()){
@@ -248,6 +254,7 @@ namespace broomie {
         std::string errMessage = cl.traceErr();
         std::cout << errMessage << std::endl;
       }
+      delete classList;
       return ok;
     }
 
@@ -290,6 +297,8 @@ int main(int argc, char **argv)
     mode = broomie::classify::TEST;
   } else if(arg[0] == "classify"){
     mode = broomie::classify::CLASSIFY;
+  } else {
+    broomie::classify::printUsage(fileName);
   }
   std::string basePath = arg[1];
   std::string testData = arg[2];

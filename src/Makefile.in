@@ -36,10 +36,12 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = classifier.fcgi$(EXEEXT) brmtest$(EXEEXT) \
-	brmtrain$(EXEEXT) brmclassify$(EXEEXT) brmNBtest$(EXEEXT)
-check_PROGRAMS = brmtest$(EXEEXT)
-TESTS = brmtest$(EXEEXT)
+bin_PROGRAMS = brmtrain$(EXEEXT) brmclassify$(EXEEXT) $(am__EXEEXT_1) \
+	$(am__EXEEXT_2)
+@ENABLE_INTERFACE_TRUE@am__append_1 = classifier.fcgi
+@ENABLE_TEST_TRUE@am__append_2 = brmtest brmNBtest
+@ENABLE_TEST_TRUE@check_PROGRAMS = brmtest$(EXEEXT)
+@ENABLE_TEST_TRUE@TESTS = brmtest$(EXEEXT)
 subdir = src
 DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -82,10 +84,14 @@ libbrm_la_OBJECTS = $(am_libbrm_la_OBJECTS)
 libbrm_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libbrm_la_LDFLAGS) $(LDFLAGS) -o $@
+@ENABLE_INTERFACE_TRUE@am__EXEEXT_1 = classifier.fcgi$(EXEEXT)
+@ENABLE_TEST_TRUE@am__EXEEXT_2 = brmtest$(EXEEXT) brmNBtest$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
-am_brmNBtest_OBJECTS = brmNBtest-brmNBtest.$(OBJEXT)
+am__brmNBtest_SOURCES_DIST = brmNBtest.cpp
+@ENABLE_TEST_TRUE@am_brmNBtest_OBJECTS =  \
+@ENABLE_TEST_TRUE@	brmNBtest-brmNBtest.$(OBJEXT)
 brmNBtest_OBJECTS = $(am_brmNBtest_OBJECTS)
-brmNBtest_DEPENDENCIES = libbrm.la
+@ENABLE_TEST_TRUE@brmNBtest_DEPENDENCIES = libbrm.la
 brmNBtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(brmNBtest_LDFLAGS) $(LDFLAGS) -o $@
@@ -95,9 +101,10 @@ brmclassify_DEPENDENCIES = libbrm.la
 brmclassify_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(brmclassify_LDFLAGS) $(LDFLAGS) -o $@
-am_brmtest_OBJECTS = brmtest-brmtest.$(OBJEXT)
+am__brmtest_SOURCES_DIST = brmtest.cpp
+@ENABLE_TEST_TRUE@am_brmtest_OBJECTS = brmtest-brmtest.$(OBJEXT)
 brmtest_OBJECTS = $(am_brmtest_OBJECTS)
-brmtest_DEPENDENCIES = libbrm.la
+@ENABLE_TEST_TRUE@brmtest_DEPENDENCIES = libbrm.la
 brmtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(brmtest_LDFLAGS) $(LDFLAGS) -o $@
@@ -107,9 +114,11 @@ brmtrain_DEPENDENCIES = libbrm.la
 brmtrain_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(brmtrain_LDFLAGS) $(LDFLAGS) -o $@
-am_classifier_fcgi_OBJECTS = classifier_fcgi-brminterface.$(OBJEXT)
+am__classifier_fcgi_SOURCES_DIST = brminterface.cpp
+@ENABLE_INTERFACE_TRUE@am_classifier_fcgi_OBJECTS =  \
+@ENABLE_INTERFACE_TRUE@	classifier_fcgi-brminterface.$(OBJEXT)
 classifier_fcgi_OBJECTS = $(am_classifier_fcgi_OBJECTS)
-classifier_fcgi_DEPENDENCIES = libbrm.la
+@ENABLE_INTERFACE_TRUE@classifier_fcgi_DEPENDENCIES = libbrm.la
 classifier_fcgi_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(classifier_fcgi_LDFLAGS) $(LDFLAGS) -o $@
@@ -138,9 +147,9 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(libbrm_la_SOURCES) $(brmNBtest_SOURCES) \
 	$(brmclassify_SOURCES) $(brmtest_SOURCES) $(brmtrain_SOURCES) \
 	$(classifier_fcgi_SOURCES)
-DIST_SOURCES = $(libbrm_la_SOURCES) $(brmNBtest_SOURCES) \
-	$(brmclassify_SOURCES) $(brmtest_SOURCES) $(brmtrain_SOURCES) \
-	$(classifier_fcgi_SOURCES)
+DIST_SOURCES = $(libbrm_la_SOURCES) $(am__brmNBtest_SOURCES_DIST) \
+	$(brmclassify_SOURCES) $(am__brmtest_SOURCES_DIST) \
+	$(brmtrain_SOURCES) $(am__classifier_fcgi_SOURCES_DIST)
 HEADERS = $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -258,7 +267,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libbrm.la
 libbrm_la_CPPFLAGS = -Wall
-libbrm_la_LDFLAGS = -I/usr/local/include -L/usr/local/lib `tcucodec conf -l` -lfcgi
+libbrm_la_LDFLAGS = -I/usr/local/include -L/usr/local/lib `tcucodec conf -l`
 libbrm_la_SOURCES = libbrm.hpp libbrm.cpp brmalgorithm.hpp brmalgorithm.cpp brmNB.hpp brmNB.cpp
 pkginclude_HEADERS = libbrm.hpp brmalgorithm.hpp brmutil.hpp brmNB.hpp
 brmtrain_CPPFLAGS = -Wall
@@ -269,18 +278,18 @@ brmclassify_CPPFLAGS = -Wall
 brmclassify_LDADD = libbrm.la
 brmclassify_LDFLAGS = -L/usr/local/lib `tcucodec conf -l`
 brmclassify_SOURCES = brmclassify.cpp
-classifier_fcgi_CPPFLAGS = -Wall
-classifier_fcgi_LDADD = libbrm.la
-classifier_fcgi_LDFLAGS = -L/usr/local/lib `tcucodec conf -l` -lfcgi
-classifier_fcgi_SOURCES = brminterface.cpp
-brmtest_CPPFLAGS = -Wall
-brmtest_LDADD = libbrm.la
-brmtest_LDFLAGS = -L/usr/local/lib -lgtest
-brmtest_SOURCES = brmtest.cpp
-brmNBtest_CPPFLAGS = -Wall
-brmNBtest_LDADD = libbrm.la
-brmNBtest_LDFLAGS = -L/usr/local/lib -lgtest
-brmNBtest_SOURCES = brmNBtest.cpp
+@ENABLE_INTERFACE_TRUE@classifier_fcgi_CPPFLAGS = -Wall
+@ENABLE_INTERFACE_TRUE@classifier_fcgi_LDADD = libbrm.la
+@ENABLE_INTERFACE_TRUE@classifier_fcgi_LDFLAGS = -L/usr/local/lib `tcucodec conf -l` -lfcgi
+@ENABLE_INTERFACE_TRUE@classifier_fcgi_SOURCES = brminterface.cpp
+@ENABLE_TEST_TRUE@brmtest_CPPFLAGS = -Wall
+@ENABLE_TEST_TRUE@brmtest_LDADD = libbrm.la
+@ENABLE_TEST_TRUE@brmtest_LDFLAGS = -L/usr/local/lib -lgtest
+@ENABLE_TEST_TRUE@brmtest_SOURCES = brmtest.cpp
+@ENABLE_TEST_TRUE@brmNBtest_CPPFLAGS = -Wall
+@ENABLE_TEST_TRUE@brmNBtest_LDADD = libbrm.la
+@ENABLE_TEST_TRUE@brmNBtest_LDFLAGS = -L/usr/local/lib -lgtest
+@ENABLE_TEST_TRUE@brmNBtest_SOURCES = brmNBtest.cpp
 all: all-am
 
 .SUFFIXES:

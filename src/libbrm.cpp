@@ -18,6 +18,17 @@ namespace broomie {
     return "unknown error";
   }
 
+  int compareResult(Result* a, Result* b)
+  {
+    if(a->point < b->point){
+      return 1;
+    } else if(a->point > b->point){
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
   /*****************************************************************************
    * Documnet object
    ****************************************************************************/
@@ -54,8 +65,9 @@ namespace broomie {
    * Classifier classes
    ****************************************************************************/
 
-  ResultSet::ResultSet(const Result results[], int num)
+  ResultSet::ResultSet(Result results[], int num)
   {
+    std::qsort(results, num, sizeof(*results), (int (*)(const void*, const void*))compareResult);
     this->results = new Result[num];
     int i = 0;
     for(i = 0; i < num; i++){

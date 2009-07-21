@@ -152,5 +152,5 @@ int main(int argc, char **argv)
               << std::endl;
     return false;
   }
-  return EXIT_SUCCESS;
+  return 0;
 }
