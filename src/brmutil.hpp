@@ -8,6 +8,10 @@
 
 #include "libbrm.hpp"
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
 namespace {
   class Initilizer {
   public:
@@ -20,9 +24,16 @@ namespace {
   Initilizer init;
 }
 
-namespace broomie{
+namespace broomie {
 
   namespace util {
+
+    void copyRight(std::string& body)
+    {
+      body.append(PACKAGE_STRING);
+      body.append("\n");
+      body.append("Copyright(C) 2009 - Shunya Kimura");
+    }
 
     std::vector<std::string> split(std::string str, std::string delim)
     {

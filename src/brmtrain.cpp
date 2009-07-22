@@ -96,55 +96,110 @@ namespace broomie {
 
     void printUsage(std::string fileName)
     {
-      std::cerr << fileName << " : the utility to make a model from training data with broomie" << std::endl;
-      std::cerr << "  " << fileName << " bayes [save_dir] [traing_file] [`class1', `class2', `class3']" << std::endl;
-      std::cerr << "  " << std::endl;
-      std::cerr << "  create model example:" << std::endl;
-      std::cerr << "    " << fileName << " bayes /tmp/model/ ~/train/ex1.tsv sports it economic" << std::endl;
-      std::cerr << "    - /tmp/train_data/\tdirectory path to save model and dbms. (need to create dir before run this mode)" << std::endl;
-      std::cerr << "    - ~/train/ex1.tsv\ttraining data to making models." << std::endl;
-      std::cerr << "    - sport it economic\tclasses(categories) include in training data. (classes must be known)" << std::endl;
-      std::cerr << "    " << std::endl;
-      std::cerr << "  format of [training_data] & [test_file]:" << std::endl;
-      std::cerr << "    - class(category)['\\t']word_1['\\t']point_1['\\t']word_2['\\t']point_2['\\n']" << std::endl;
-      std::cerr << "    -- class(string)" << std::endl;
-      std::cerr << "    -- word(string)" << std::endl;
-      std::cerr << "    -- point(double)" << std::endl;
-      std::cerr << "  training data sample:" << std::endl;
-      std::cerr << "      it\thoge\t0.1\tfuga\t 0.2\t hoo\t 0.32" << std::endl;
-      std::cerr << "      sport\thoge\t0.32\tfuga\t0.19\thoo\t0.01" << std::endl;
-      std::cerr << "      economic\thoge\t0.23\tfuga\t0.61\thoo\t0.77" << std::endl;
-      std::cerr << "    " << std::endl;
+      std::cerr << fileName
+                << " : the utility to make a model from training data with broomie"
+                << std::endl;
+      std::cerr << std::endl;
+      std::cerr << "  usage: " << fileName
+                << " -s dir -t train [options] "
+                << "[classes (class1 class2 class3 ... classN)]"
+                << std::endl;
+      std::cerr << "   e.g.: " << fileName
+                << " -s dir/ -t train.tsv sports economic education"
+                << std::endl;
+      std::cerr << "    " << "-s, --save-dir=dir      "
+                << "the save path for learning model."
+                << std::endl;
+      std::cerr << "    " << "-t, --train-data=train  "
+                << "the file path of training data."
+                << std::endl;
+      std::cerr << "    -m, --method=method     "
+                << "the choice of classifer. default classifier is `bayes'."
+                <<std::endl;
+      std::cerr << "    classes                 "
+                << "the class names appear in training data. "
+                << "give class names as ``space separated'' format."
+                <<std::endl;
+      std::cerr << std::endl;
+      std::cerr << "for more information about this program, "
+                << "please visit tutorial pages."
+                << std::endl;
+      std::cerr << "http://code.google.com/p/broomie/wiki/broomie_turorial_ja"
+                << std::endl;
+      std::cerr << std::endl;
       exit(EXIT_SUCCESS);
     }
+
+    void printVersin()
+    {
+      std::string body;
+      broomie::util::copyRight(body);
+      std::cerr << body << std::endl;
+      exit(EXIT_SUCCESS);
+    }
+
+    void procArgs(int argc, char** argv, std::string& fileName,
+                  std::string& method, std::string& basePath,
+                  std::string& trainPath, broomie::CList& classNames)
+    {
+      for(int i = 1; i < argc; i++){
+        std::string argBuf = argv[i];
+        if(argBuf == "-m"){
+          method = argv[++i];
+        } else if((argBuf.find("--method=")) != std::string::npos){
+          unsigned int idx = argBuf.find("=");
+          method = argv[i] + idx + 1;
+        } else if(argBuf == "-s"){
+          if(basePath.size() > 0) broomie::train::printUsage(fileName);
+          basePath = argv[++i];
+        } else if((argBuf.find("--save-dir=")) != std::string::npos){
+          if(basePath.size() > 0) broomie::train::printUsage(fileName);
+          unsigned int idx = argBuf.find("=");
+          basePath = argv[i] + idx + 1;
+        } else if(argBuf == "-t"){
+          if(trainPath.size() > 0) broomie::train::printUsage(fileName);
+          trainPath = argv[++i];
+        } else if((argBuf.find("--train-data=")) != std::string::npos){
+          if(trainPath.size() > 0) broomie::train::printUsage(fileName);
+          unsigned int idx = argBuf.find("=");
+          trainPath = argv[i] + idx + 1;
+        } else if(argBuf == "--help" || argBuf == "-h"){
+          broomie::train::printUsage(fileName);
+        } else if(argBuf == "--version" || argBuf == "-v"){
+          broomie::train::printVersin();
+        } else {
+          if(basePath.size() > 0 && trainPath.size() > 0)
+            classNames.push_back(argv[i]);
+        }
+      }
+      if(basePath.size() < 1 && trainPath.size() < 1)
+        broomie::train::printUsage(fileName);
+    }
+
   }
 }
 
 int main(int argc, char **argv)
 {
   std::string fileName(argv[0]);
-  if(argc < 6) broomie::train::printUsage(fileName);
-  std::vector<std::string> arg(argc-1);
-  for(int i = 0; i < argc - 1; i++){
-    arg[i] = argv[i+1];
-  }
-  std::string method    = arg[0];
-  std::string basePath  = arg[1];
-  std::string trainFile = arg[2];
+  std::string method = METHOD_BAYES;
+  std::string basePath;
+  std::string trainPath;
+  broomie::CList classNames;
+  broomie::train::procArgs(argc, argv,
+                           fileName, method, basePath, trainPath, classNames);
+
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory." << std::endl;
     return false;
   }
-  if(!broomie::util::checkFile(trainFile)){
-    std::cerr << "error: [" << trainFile << "] is not regular file." << std::endl;
+  if(!broomie::util::checkFile(trainPath)){
+    std::cerr << "error: [" << trainPath << "] is not regular file." << std::endl;
     return false;
   }
-  broomie::CList classNames;
-  for(unsigned int i = 3; i < arg.size(); i++) {
-    classNames.push_back(arg[i]);
-  }
+
   if(method == METHOD_BAYES){ //algorithm
-    if(!broomie::train::createTrain(basePath, trainFile, classNames,
+    if(!broomie::train::createTrain(basePath, trainPath, classNames,
                                     broomie::BAYES)) return false;
   } else {
     std::cerr << "error: unknown classifier method [" <<
@@ -152,5 +207,6 @@ int main(int argc, char **argv)
               << std::endl;
     return false;
   }
+
   return 0;
 }

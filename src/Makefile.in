@@ -38,7 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = brmtrain$(EXEEXT) brmclassify$(EXEEXT) $(am__EXEEXT_1) \
 	$(am__EXEEXT_2)
-@ENABLE_INTERFACE_TRUE@am__append_1 = classifier.fcgi
+@ENABLE_FCGI_TRUE@am__append_1 = classifier.fcgi
 @ENABLE_TEST_TRUE@am__append_2 = brmtest brmNBtest
 @ENABLE_TEST_TRUE@check_PROGRAMS = brmtest$(EXEEXT)
 @ENABLE_TEST_TRUE@TESTS = brmtest$(EXEEXT)
@@ -84,7 +84,7 @@ libbrm_la_OBJECTS = $(am_libbrm_la_OBJECTS)
 libbrm_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libbrm_la_LDFLAGS) $(LDFLAGS) -o $@
-@ENABLE_INTERFACE_TRUE@am__EXEEXT_1 = classifier.fcgi$(EXEEXT)
+@ENABLE_FCGI_TRUE@am__EXEEXT_1 = classifier.fcgi$(EXEEXT)
 @ENABLE_TEST_TRUE@am__EXEEXT_2 = brmtest$(EXEEXT) brmNBtest$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am__brmNBtest_SOURCES_DIST = brmNBtest.cpp
@@ -115,10 +115,10 @@ brmtrain_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(brmtrain_LDFLAGS) $(LDFLAGS) -o $@
 am__classifier_fcgi_SOURCES_DIST = brminterface.cpp
-@ENABLE_INTERFACE_TRUE@am_classifier_fcgi_OBJECTS =  \
-@ENABLE_INTERFACE_TRUE@	classifier_fcgi-brminterface.$(OBJEXT)
+@ENABLE_FCGI_TRUE@am_classifier_fcgi_OBJECTS =  \
+@ENABLE_FCGI_TRUE@	classifier_fcgi-brminterface.$(OBJEXT)
 classifier_fcgi_OBJECTS = $(am_classifier_fcgi_OBJECTS)
-@ENABLE_INTERFACE_TRUE@classifier_fcgi_DEPENDENCIES = libbrm.la
+@ENABLE_FCGI_TRUE@classifier_fcgi_DEPENDENCIES = libbrm.la
 classifier_fcgi_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(classifier_fcgi_LDFLAGS) $(LDFLAGS) -o $@
@@ -278,10 +278,10 @@ brmclassify_CPPFLAGS = -Wall
 brmclassify_LDADD = libbrm.la
 brmclassify_LDFLAGS = -L/usr/local/lib `tcucodec conf -l`
 brmclassify_SOURCES = brmclassify.cpp
-@ENABLE_INTERFACE_TRUE@classifier_fcgi_CPPFLAGS = -Wall
-@ENABLE_INTERFACE_TRUE@classifier_fcgi_LDADD = libbrm.la
-@ENABLE_INTERFACE_TRUE@classifier_fcgi_LDFLAGS = -L/usr/local/lib `tcucodec conf -l` -lfcgi
-@ENABLE_INTERFACE_TRUE@classifier_fcgi_SOURCES = brminterface.cpp
+@ENABLE_FCGI_TRUE@classifier_fcgi_CPPFLAGS = -Wall
+@ENABLE_FCGI_TRUE@classifier_fcgi_LDADD = libbrm.la
+@ENABLE_FCGI_TRUE@classifier_fcgi_LDFLAGS = -L/usr/local/lib `tcucodec conf -l` -lfcgi
+@ENABLE_FCGI_TRUE@classifier_fcgi_SOURCES = brminterface.cpp
 @ENABLE_TEST_TRUE@brmtest_CPPFLAGS = -Wall
 @ENABLE_TEST_TRUE@brmtest_LDADD = libbrm.la
 @ENABLE_TEST_TRUE@brmtest_LDFLAGS = -L/usr/local/lib -lgtest

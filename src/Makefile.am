@@ -7,7 +7,7 @@ pkginclude_HEADERS = libbrm.hpp brmalgorithm.hpp brmutil.hpp brmNB.hpp
 
 bin_PROGRAMS = brmtrain brmclassify
 
-if ENABLE_INTERFACE
+if ENABLE_FCGI
     bin_PROGRAMS += classifier.fcgi
 endif
 
@@ -26,7 +26,7 @@ brmclassify_LDADD    = libbrm.la
 brmclassify_LDFLAGS  = -L/usr/local/lib `tcucodec conf -l`
 brmclassify_SOURCES  = brmclassify.cpp
 
-if ENABLE_INTERFACE
+if ENABLE_FCGI
     classifier_fcgi_CPPFLAGS = -Wall
     classifier_fcgi_LDADD    = libbrm.la
     classifier_fcgi_LDFLAGS  = -L/usr/local/lib `tcucodec conf -l` -lfcgi
