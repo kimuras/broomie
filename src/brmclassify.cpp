@@ -1,5 +1,6 @@
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
+#include <iomanip>
 
 const std::string CONFIG_NAME  = "broomie.conf";
 const std::string METHOD_BAYES = "bayes";
@@ -12,7 +13,7 @@ namespace broomie {
     typedef std::map<std::string, double> ClassVal;
 
     enum {
-      TEST   = 1,
+      TEST     = 1,
       CLASSIFY = 2,
     };
 
@@ -77,9 +78,10 @@ namespace broomie {
     void printAccuracy(ClassVal* precision, ClassVal* recall,
                        ClassResult& accuracyBuf, CList* classList)
     {
-      std::cerr << "=== Detailed Accuracy By Class ===" << std::endl;
-      printf("\tpre\trec\tf-m\tclass\n");
-      printf("---------------------------------------------\n");
+      std::cout.precision(3);
+      std::cout << "=== Detailed Accuracy By Class ===" << std::endl;
+      std::cout << "\tpre\trec\tf-m\tclass" << std::endl;
+      std::cout << "---------------------------------------------" << std::endl;
       for(unsigned int i = 0; i < (*classList).size(); i++){
         double pre = (*precision)[(*classList)[i]];
         double rec = (*recall)[(*classList)[i]];
@@ -88,8 +90,8 @@ namespace broomie {
         if(pre > 0 && rec > 0) {
           fMeasure = (2 * (pre * rec)) / (pre + rec);
         }
-        printf("\t%.3f\t%.3f\t%.3f\t%s\n", pre, rec,
-               fMeasure, (*classList)[i].c_str());
+        std::cout << "\t" << pre << "\t" << rec << "\t"  << fMeasure << "\t"
+                  << (*classList)[i].c_str() << std::endl;
       }
       double preAve = (*precision)["PRECISION_AVERAGE"];
       double recAve = (*recall)["RECALL_AVERAGE"];
@@ -97,35 +99,39 @@ namespace broomie {
       if(preAve > 0 && recAve > 0){
         aveFmeasure = (2 * (preAve * recAve)) / (preAve + recAve);
       }
-      printf("---------------------------------------------\n");
-      printf("Avg.\t%.3f\t%.3f\t%.3f\n\n", preAve, recAve, aveFmeasure);
-
-      printf("=== Confusion Matrix ===\n");
+      std::cout << "---------------------------------------------" << std::endl;
+      std::cout << "Avg.\t" << preAve << "\t" << recAve << "\t"
+                << aveFmeasure << std::endl;
+      std::cout << std::endl;
+      std::cout << "=== Confusion Matrix ===" << std::endl;
       for(unsigned int i = 0; i < (*classList).size(); i++){
-        printf("%d\t", i);
+        std::cout << i << "\t";
       }
       ClassResult::iterator itr;
-      printf("<-- classified as\n");
-      printf("---------------------------------------------\n");
+      std::cout << "<-- classified as" << std::endl;
+      std::cout << "---------------------------------------------" << std::endl;
       for(unsigned int i = 0; i < (*classList).size(); i++){
         for(unsigned int j = 0; j < (*classList).size(); j++){
           itr = accuracyBuf.find((*classList)[i]);
-          printf("%d\t", itr->second[(*classList)[j]]);
+          std::cout << itr->second[(*classList)[j]] << "\t";
         }
-        printf("| %d = %s\n", i, (*classList)[i].c_str());
+        std::cout << "| " << i << " = " << (*classList)[i].c_str() << std::endl;
       }
-      printf("\n");
+      std::cout << std::endl;
     }
 
     void printSummary(int collectNum, int numTest)
     {
+      std::cout.precision(3);
       std::cout << "=== classify result ===" << std::endl;
-      printf("Correctly Classified Instance:\t%d\t%.3f\n", collectNum,
-             (static_cast<double>(collectNum)/numTest));
-      printf("Number of test examples:\t%d\n\n", numTest);
+      std::cout << "Correctly Classified Instance:\t" << collectNum << "\t"
+                << (static_cast<double>(collectNum)/numTest) << std::endl;
+      std::cout << "Number of test examples:\t" << numTest << std::endl;
+      std::cout << std::endl;
     }
 
-    bool classifyTestData(std::string basePath, std::string testPath, int mode){
+    bool classifyTestData(std::string basePath, std::string testPath, int mode)
+    {
       bool ok = true;
       std::ifstream ifs(testPath.c_str(), std::ios::in);
       if(!ifs){
@@ -260,57 +266,111 @@ namespace broomie {
 
     void printUsage(std::string fileName)
     {
-      std::cerr << fileName << " : the utility to classify example with broomie" << std::endl;
-      std::cerr << "  " << fileName << " accuracy  [model_dir] [test_date(labbeled)]" << std::endl;
-      std::cerr << "  " << fileName << " classify  [model_dir] [test_date(no label)]" << std::endl;
-      std::cerr << "  " << std::endl;
-      std::cerr << "  classify example with `accuracy' mode:" << std::endl;
-      std::cerr << "    " << fileName << " test /tmp/model/ /tmp/test_data.tsv" << std::endl;
-      std::cerr << "    - test\t classify mode. when given `accuracy' test data needs correct class to each line." << std::endl;
-      std::cerr << "    - /tmp/model/\t path to saved model." << std::endl;
-      std::cerr << "    - /tmp/test_data.tsv\t test data." << std::endl;
+      std::cerr << fileName
+                << " : the utility to classify example with broomie"
+                << std::endl;
       std::cerr << std::endl;
-      std::cerr << "  format of test data with `accuracy' mode:" << std::endl;
-      std::cerr << "    - class(category)['\\t']word_1['\\t']point_1['\\t']word_2['\\t']point_2['\\n']" << std::endl;
-      std::cerr << "      it\thoge\t0.1\tfuga\t0.2\thoo\t0.32" << std::endl;
-      std::cerr << "      sport\thoge\t0.32\tfuga\t0.19\thoo\t0.01" << std::endl;
+      std::cerr << "  usage: " << fileName
+                << " [accuracy|classify] -m dir -t test_data" << std::endl;
+      std::cerr << "  " << fileName
+                << " accuracy -m dir -t test_data(labbeled)" << std::endl;
+      std::cerr << "  " << fileName
+                << " classify -m dir -t test_data(unlabbeled)" << std::endl;
+      std::cerr << "    " << "-m, --model-dir=dir      "
+                << "the path for learning model."
+                << std::endl;
+      std::cerr << "    " << "-t, --test-datad=test    "
+                << "test examples, classifing data."
+                << std::endl;
+      std::cerr << "    " << "accuracy                 "
+                << "check the accuracy of the classifier with class "
+                << "name given test examaples."
+                << std::endl;
+      std::cerr << "    " << "classify                 "
+                << "classify test examaples not given class names."
+                << std::endl;
       std::cerr << std::endl;
-      std::cerr << "  format of test data without `accuracy' mode:" << std::endl;
-      std::cerr << "    - word_1['\\t']point_1['\\t']word_2['\\t']point_2['\\n']" << std::endl;
-      std::cerr << "      hoge\t0.1\tfuga\t0.2\thoo\t0.32" << std::endl;
-      std::cerr << "      hoge\t0.32\tfuga\t0.19\thoo\t0.01" << std::endl;
-      exit(0);
+      std::cerr << "for more information about this program, "
+                << "please visit tutorial pages."
+                << std::endl;
+      std::cerr << "http://code.google.com/p/broomie/wiki/broomie_turorial_ja"
+                << std::endl;
+      std::cerr << std::endl;
+      exit(EXIT_SUCCESS);
     }
+
+    void printVersion()
+    {
+      std::string body;
+      broomie::util::copyRight(body);
+      std::cerr << body << std::endl;
+      exit(EXIT_SUCCESS);
+    }
+
+
+    void procArgs(int argc, char** argv, int& mode, std::string& basePath, std::string& testPath)
+    {
+      std::string fileName = argv[0];
+      std::string argBuf   = argv[1];
+
+      if(argBuf == "accuracy"){
+        mode = broomie::classify::TEST;
+      } else if(argBuf == "classify"){
+        mode = broomie::classify::CLASSIFY;
+      } else if(argBuf == "-h" || argBuf == "--help"){
+        broomie::classify::printUsage(fileName);
+      } else if(argBuf == "-v" || argBuf == "--version"){
+        broomie::classify::printVersion();
+      } else {
+        broomie::classify::printUsage(fileName);
+      }
+      if(argc < 4) broomie::classify::printUsage(fileName);
+
+      for(int i = 2; i < argc; i++){
+        argBuf = argv[i];
+        if(argBuf == "-m"){
+          if(basePath.size() > 0) broomie::classify::printUsage(fileName);
+          basePath = argv[++i];
+        } else if((argBuf.find("--model-dir=")) != std::string::npos){
+          if(basePath.size() > 0) broomie::classify::printUsage(fileName);
+          unsigned int idx = argBuf.find("=");
+          basePath = argv[i] + idx + 1;
+        } else if(argBuf == "-t"){
+          if(testPath.size() > 0) broomie::classify::printUsage(fileName);
+          testPath = argv[++i];
+        } else if((argBuf.find("--test-data=")) != std::string::npos){
+          if(testPath.size() > 0) broomie::classify::printUsage(fileName);
+          unsigned int idx = argBuf.find("=");
+          testPath = argv[i] + idx + 1;
+        } else {
+          broomie::classify::printUsage(fileName);
+        }
+      }
+      if(testPath.size() < 1 || basePath.size() < 1)
+        broomie::classify::printUsage(fileName);
+    }
+
   }
 }
 
 int main(int argc, char **argv)
 {
-  std::string fileName(argv[0]);
-  if(argc < 3) broomie::classify::printUsage(fileName);
-  std::vector<std::string> arg(argc-1);
-  for(int i = 0; i < argc - 1; i++){
-    arg[i] = argv[i+1];
-  }
+  if(argc < 2) broomie::classify::printUsage(argv[0]);
+  std::string basePath;
+  std::string testPath;
   int mode = broomie::classify::TEST;
-  if(arg[0] == "accuracy"){
-    mode = broomie::classify::TEST;
-  } else if(arg[0] == "classify"){
-    mode = broomie::classify::CLASSIFY;
-  } else {
-    broomie::classify::printUsage(fileName);
-  }
-  std::string basePath = arg[1];
-  std::string testData = arg[2];
+  broomie::classify::procArgs(argc, argv, mode, basePath, testPath);
+
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory." << std::endl;
     return false;
   }
-  if(!broomie::util::checkFile(testData)){
-    std::cerr << "error: [" << testData << "] is not regular file." << std::endl;
+  if(!broomie::util::checkFile(testPath)){
+    std::cerr << "error: [" << testPath << "] is not regular file." << std::endl;
     return false;
   }
-  std::cout << basePath << "\t" << testData << "\t" << mode << std::endl;
-  broomie::classify::classifyTestData(basePath, testData, mode);
+  std::cout << basePath << "\t" << testPath << "\t" << mode << std::endl;
+  broomie::classify::classifyTestData(basePath, testPath, mode);
+
   return 0;
 }

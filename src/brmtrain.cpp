@@ -130,7 +130,7 @@ namespace broomie {
       exit(EXIT_SUCCESS);
     }
 
-    void printVersin()
+    void printVersion()
     {
       std::string body;
       broomie::util::copyRight(body);
@@ -138,10 +138,10 @@ namespace broomie {
       exit(EXIT_SUCCESS);
     }
 
-    void procArgs(int argc, char** argv, std::string& fileName,
-                  std::string& method, std::string& basePath,
+    void procArgs(int argc, char** argv, std::string& method, std::string& basePath,
                   std::string& trainPath, broomie::CList& classNames)
     {
+      std::string fileName = argv[0];
       for(int i = 1; i < argc; i++){
         std::string argBuf = argv[i];
         if(argBuf == "-m"){
@@ -166,7 +166,7 @@ namespace broomie {
         } else if(argBuf == "--help" || argBuf == "-h"){
           broomie::train::printUsage(fileName);
         } else if(argBuf == "--version" || argBuf == "-v"){
-          broomie::train::printVersin();
+          broomie::train::printVersion();
         } else {
           if(basePath.size() > 0 && trainPath.size() > 0)
             classNames.push_back(argv[i]);
@@ -181,13 +181,11 @@ namespace broomie {
 
 int main(int argc, char **argv)
 {
-  std::string fileName(argv[0]);
   std::string method = METHOD_BAYES;
   std::string basePath;
   std::string trainPath;
   broomie::CList classNames;
-  broomie::train::procArgs(argc, argv,
-                           fileName, method, basePath, trainPath, classNames);
+  broomie::train::procArgs(argc, argv, method, basePath, trainPath, classNames);
 
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory." << std::endl;
