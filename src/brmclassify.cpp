@@ -276,18 +276,18 @@ namespace broomie {
                 << " accuracy -m dir -t test_data(labbeled)" << std::endl;
       std::cerr << "  " << fileName
                 << " classify -m dir -t test_data(unlabbeled)" << std::endl;
-      std::cerr << "    " << "-m, --model-dir=dir      "
-                << "the path for learning model."
-                << std::endl;
-      std::cerr << "    " << "-t, --test-datad=test    "
-                << "test examples, classifing data."
-                << std::endl;
       std::cerr << "    " << "accuracy                 "
                 << "check the accuracy of the classifier with class "
                 << "name given test examaples."
                 << std::endl;
       std::cerr << "    " << "classify                 "
                 << "classify test examaples not given class names."
+                << std::endl;
+      std::cerr << "    " << "-m, --model-dir=dir      "
+                << "the path for learning model."
+                << std::endl;
+      std::cerr << "    " << "-t, --test-datad=test    "
+                << "test examples, classifing data."
                 << std::endl;
       std::cerr << std::endl;
       std::cerr << "for more information about this program, "

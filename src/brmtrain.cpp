@@ -34,7 +34,9 @@ namespace broomie {
       }
       ofs.write(DEFINE_BASE_DIR_NAME.c_str(), std::strlen(DEFINE_BASE_DIR_NAME.c_str()));
       ofs.write("\t", 1);
-      ofs.write(basePath.c_str(), std::strlen(basePath.c_str()));
+      char* realBasePath = realpath(basePath.c_str(), NULL);
+      ofs.write(realBasePath, std::strlen(realBasePath));
+      std::free(realBasePath);
       ofs.write("\n", 1);
       ofs.close();
       std::map<std::string, int> classNamesMap;
