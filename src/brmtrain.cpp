@@ -8,8 +8,15 @@ const std::string METHOD_BAYES = "bayes";
 namespace broomie {
 
   namespace train {
+    enum {
+      DEFAULT = 1,
+      EASY    = 2,
+    };
+
+
     bool createTrain(std::string basePath, std::string trainPath,
-                     CList& classNames, int classifierMethod)
+                     CList& classNames, int classifierMethod,
+                     int mode)
     {
       bool ok = true;
       std::ifstream ifs(trainPath.c_str());
@@ -26,13 +33,15 @@ namespace broomie {
       }
       std::string confPath = basePath + CONFIG_NAME;
       std::ofstream ofs(confPath.c_str());
-      ofs.write(DEFINE_METHOD_NAME.c_str(), std::strlen(DEFINE_METHOD_NAME.c_str()));
+      ofs.write(DEFINE_METHOD_NAME.c_str(),
+                std::strlen(DEFINE_METHOD_NAME.c_str()));
       ofs.write("\t", 1);
       if(classifierMethod == broomie::BAYES){
         ofs.write(METHOD_BAYES.c_str(), std::strlen(METHOD_BAYES.c_str()));
         ofs.write("\n", 1);
       }
-      ofs.write(DEFINE_BASE_DIR_NAME.c_str(), std::strlen(DEFINE_BASE_DIR_NAME.c_str()));
+      ofs.write(DEFINE_BASE_DIR_NAME.c_str(),
+                std::strlen(DEFINE_BASE_DIR_NAME.c_str()));
       ofs.write("\t", 1);
       char* realBasePath = realpath(basePath.c_str(), NULL);
       ofs.write(realBasePath, std::strlen(realBasePath));
@@ -45,9 +54,15 @@ namespace broomie {
       }
       std::string line;
       int cnt = 0;
-      std::cerr << "start reading training data\n";
+      std::cout << "start reading training data\n";
+      segmenter::Segmenter sg;
       while(std::getline(ifs, line)){
-        std::vector<std::string> features = broomie::util::split(line, "\t");
+        std::vector<std::string> features;
+        if(mode & broomie::train::EASY){
+          broomie::util::convertbrmFormat(sg, line, features);
+        } else {
+          features = broomie::util::split(line, "\t");
+        }
         broomie::Document *doc =
           new broomie::Document((features.size() - 1) / 2);
         std::string className;
@@ -117,11 +132,11 @@ namespace broomie {
                 << std::endl;
       std::cerr << "    -m, --method=method     "
                 << "the choice of classifer. default classifier is `bayes'."
-                <<std::endl;
+                << std::endl;
       std::cerr << "    classes                 "
                 << "the class names appear in training data. "
                 << "give class names as ``space separated'' format."
-                <<std::endl;
+                << std::endl;
       std::cerr << std::endl;
       std::cerr << "for more information about this program, "
                 << "please visit tutorial pages."
@@ -140,8 +155,9 @@ namespace broomie {
       exit(EXIT_SUCCESS);
     }
 
-    void procArgs(int argc, char** argv, std::string& method, std::string& basePath,
-                  std::string& trainPath, broomie::CList& classNames)
+    void procArgs(int argc, char** argv, std::string& method,
+                  std::string& basePath, std::string& trainPath,
+                  broomie::CList& classNames, int & mode)
     {
       std::string fileName = argv[0];
       for(int i = 1; i < argc; i++){
@@ -165,6 +181,8 @@ namespace broomie {
           if(trainPath.size() > 0) broomie::train::printUsage(fileName);
           unsigned int idx = argBuf.find("=");
           trainPath = argv[i] + idx + 1;
+        } else if(argBuf == "-e" || argBuf == "--easy"){
+          mode = broomie::train::EASY;
         } else if(argBuf == "--help" || argBuf == "-h"){
           broomie::train::printUsage(fileName);
         } else if(argBuf == "--version" || argBuf == "-v"){
@@ -187,20 +205,24 @@ int main(int argc, char **argv)
   std::string basePath;
   std::string trainPath;
   broomie::CList classNames;
-  broomie::train::procArgs(argc, argv, method, basePath, trainPath, classNames);
+  int mode = broomie::train::DEFAULT;
+  broomie::train::procArgs(argc, argv, method, basePath,
+                           trainPath, classNames, mode);
 
   if(!broomie::util::checkDir(basePath)){
-    std::cerr << "error: [" << basePath << "] is not directory." << std::endl;
+    std::cerr << "error: [" << basePath << "] is not directory."
+              << std::endl;
     return false;
   }
   if(!broomie::util::checkFile(trainPath)){
-    std::cerr << "error: [" << trainPath << "] is not regular file." << std::endl;
+    std::cerr << "error: [" << trainPath << "] is not regular file."
+              << std::endl;
     return false;
   }
 
   if(method == METHOD_BAYES){ //algorithm
     if(!broomie::train::createTrain(basePath, trainPath, classNames,
-                                    broomie::BAYES)) return false;
+                                    broomie::BAYES, mode)) return false;
   } else {
     std::cerr << "error: unknown classifier method [" <<
       method << "] (`bayes' only)"

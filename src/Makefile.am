@@ -3,7 +3,7 @@ libbrm_la_CPPFLAGS = -Wall
 libbrm_la_LDFLAGS  = -I/usr/local/include -L/usr/local/lib `tcucodec conf -l`
 libbrm_la_SOURCES  = libbrm.hpp libbrm.cpp brmalgorithm.hpp brmalgorithm.cpp brmNB.hpp brmNB.cpp
 
-pkginclude_HEADERS = libbrm.hpp brmalgorithm.hpp brmutil.hpp brmNB.hpp
+pkginclude_HEADERS = libbrm.hpp brmalgorithm.hpp brmutil.hpp brmNB.hpp libtinysegmenter.hpp tinysegmenter_train.hpp
 
 bin_PROGRAMS = brmtrain brmclassify
 
