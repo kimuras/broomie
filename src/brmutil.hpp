@@ -2,15 +2,17 @@
 #include <iterator>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <time.h>
+#include <time.h> // may be not need
 #include <stdio.h>
-
-#include "libtinysegmenter.hpp"
+#include "tinysegmenterxx.hpp"
 #include "libbrm.hpp"
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
 #endif
+
+const unsigned int MAX_WORD_BUF_SIZ = 2048;
+const unsigned int MIN_HIRAGANA_SIZ = 6;
 
 namespace {
   class Initilizer {
@@ -78,46 +80,54 @@ namespace broomie {
       }
     }
 
-    bool selectWord(segmenter::Segmenter& sg, std::string& word)
+    bool selectWord(std::string& word)
     {
+      bool rv = false;
       if(tcregexmatch(word.c_str(), "^[a-zA-Z]*$")) return true;
-      uint16_t stack[256];
-      uint16_t *ary = stack;
+      unsigned int inputSiz = word.size();
+      int stackSiz = inputSiz + 1;
+      uint16_t* ary = NULL;
+      if(inputSiz + 1 >= MAX_WORD_BUF_SIZ){
+        stackSiz = 0;
+        ary = new uint16_t[inputSiz];
+      }
+      uint16_t stack[stackSiz + 1];
+      if(!ary) ary = stack;
       int anum;
-      sg.utftoucs(word.c_str(), ary, &anum);
+      tinysegmenterxx::util::utftoucs(word.c_str(), ary, &anum);
       ary[anum] = 0x0000;
       std::map<std::string, int> charClassMap;
       for(int i = 0; i < anum; ++i){
-        char c[4];
-        uint16_t stack2[1];
-        stack2[0] = ary[i];
-        const uint16_t* ary2 = stack2;
-        std::string cTypeBuf = sg.getCharClass(stack2[0]);
-        sg.ucstoutf(ary2, 1, c);
+        uint16_t ucsChar = ary[i];
+        std::string cTypeBuf =
+          tinysegmenterxx::util::getCharClass(ucsChar);
         charClassMap[cTypeBuf] += 1;
       }
       if(charClassMap.size() == 1){
         std::map<std::string, int>::iterator itr = charClassMap.begin();
         if(itr->first == "H" || itr->first == "K"){
-          return true;
+          rv = true;
         } else if(itr->first == "I"){
-          if(word.size() > 6) return true;
+          if(word.size() > MIN_HIRAGANA_SIZ) rv = true;
         }
       }
-      return false;
+      if(ary != stack) delete[] ary;
+      return rv;
     }
 
-    void convertbrmFormat(segmenter::Segmenter& sg, std::string& line, std::vector<std::string>& features)
+    void convertbrmFormat(tinysegmenterxx::Segmenter& sg, std::string& line,
+                          std::vector<std::string>& features)
     {
       std::vector<std::string> lineElem = broomie::util::split(line, "\t");
       if(lineElem.size() < 2) return;
       features.push_back(lineElem[0]);
-      segmenter::Segmenters* rv = sg.segment(lineElem[1]);
+      tinysegmenterxx::Segmentes segs;
+      sg.segment(lineElem[1], segs);
       std::map<std::string, int> featureMap;
-      for(unsigned int i = 0; i < rv->size(); i++){
-        if(selectWord(sg, (*rv)[i])){
-          featureMap[(*rv)[i]] += 1;
-        }
+      for(unsigned int i = 0; i < segs.size(); i++){
+          if(selectWord(segs[i])){
+            featureMap[segs[i]] += 1;
+          }
       }
       std::map<std::string, int>::iterator itr;
       for(itr = featureMap.begin(); itr != featureMap.end(); itr++){
@@ -126,7 +136,6 @@ namespace broomie {
         features.push_back(valBuf);
         std::free(valBuf);
       }
-      delete rv;
     }
   }
 

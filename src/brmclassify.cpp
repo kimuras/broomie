@@ -154,7 +154,7 @@ namespace broomie {
       }
       int classifierMethod = 0;
       std::string line;
-      segmenter::Segmenter sg;
+      tinysegmenterxx::Segmenter sg;
       while(std::getline(confifs, line)){
         std::vector<std::string> features = broomie::util::split(line, "\t");
         if(features[0] == DEFINE_METHOD_NAME){
@@ -320,11 +320,11 @@ namespace broomie {
     }
 
 
-    void procArgs(int argc, char** argv, int& clmode, int& imode, std::string& basePath, std::string& testPath)
+    void procArgs(int argc, char** argv, int& clmode, int& imode,
+                  std::string& basePath, std::string& testPath)
     {
       std::string fileName = argv[0];
       std::string argBuf   = argv[1];
-
       if(argBuf == "accuracy"){
         clmode = broomie::classify::TEST;
       } else if(argBuf == "classify"){
@@ -337,7 +337,6 @@ namespace broomie {
         broomie::classify::printUsage(fileName);
       }
       if(argc < 4) broomie::classify::printUsage(fileName);
-
       for(int i = 2; i < argc; i++){
         argBuf = argv[i];
         if(argBuf == "-m"){
@@ -363,7 +362,6 @@ namespace broomie {
       if(testPath.size() < 1 || basePath.size() < 1)
         broomie::classify::printUsage(fileName);
     }
-
   }
 }
 

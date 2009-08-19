@@ -67,7 +67,8 @@ namespace broomie {
 
   ResultSet::ResultSet(Result results[], int num)
   {
-    std::qsort(results, num, sizeof(*results), (int (*)(const void*, const void*))compareResult);
+    std::qsort(results, num, sizeof(*results),
+               (int (*)(const void*, const void*))compareResult);
     this->results = new Result[num];
     int i = 0;
     for(i = 0; i < num; i++){

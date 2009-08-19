@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) Shunya KIMURA <brmtrain@gmail.com>
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ *
+ * Original version TinySegmenter was written by Taku Kudo <taku@chasen.org>
+ * The license is below.
+ *   TinySegmenter 0.1 -- Super compact Japanese tokenizer in Javascript
+ *   (c) 2008 Taku Kudo <taku@chasen.org>
+ *   TinySegmenter is freely distributable under the terms of a new BSD licence.
+ *   For details, see http://chasen.org/~taku/software/TinySegmenter/LICENCE.txt
+ *   http://www.chasen.org/~taku/software/TinySegmenter/
+ *
+ */
+
 /* C++ code produced by gperf version 3.0.3 */
 /* Command-line: gperf -CGtD -Z TrainHash -L C++ -e '	'  */
 /* Computed positions: -k'1-3,6-8,10,$' */

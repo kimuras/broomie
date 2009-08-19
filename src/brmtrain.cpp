@@ -55,7 +55,7 @@ namespace broomie {
       std::string line;
       int cnt = 0;
       std::cout << "start reading training data\n";
-      segmenter::Segmenter sg;
+      tinysegmenterxx::Segmenter sg;
       while(std::getline(ifs, line)){
         std::vector<std::string> features;
         if(mode & broomie::train::EASY){
@@ -63,6 +63,7 @@ namespace broomie {
         } else {
           features = broomie::util::split(line, "\t");
         }
+        if(features.size() < 2) continue;
         broomie::Document *doc =
           new broomie::Document((features.size() - 1) / 2);
         std::string className;
@@ -88,12 +89,12 @@ namespace broomie {
         delete doc;
         cnt++;
         if (cnt % 1000 == 0){
-          std::cerr << " (" << cnt << ")" << std::endl;
+          std::cout << " (" << cnt << ")" << std::endl;
         } else if(cnt % 100 == 0){
-          std::cerr << ".";
+          std::cout << ".";
         }
       }
-      std::cerr << std::endl;
+      std::cout << std::endl;
       ifs.close();
       std::cout << "start creating model\n";
       if(!cl.endMakingModel()){
