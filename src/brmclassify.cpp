@@ -185,7 +185,6 @@ namespace broomie {
         tinysegmenterxx::Segmentes features;
         if(clmode & TEST){
           if(imode & broomie::classify::EASY){
-            //unsigned int classdelimidx = line.find_first_of("\t");
             std::string::size_type classdelimidx = line.find_first_of("\t");
             if(classdelimidx == std::string::npos) continue;
             unsigned int i;
@@ -208,7 +207,6 @@ namespace broomie {
           }
           std::cout << "correct answer:" << className << std::endl;
         } else {
-          std::cout << line << std::endl;
           if(imode & broomie::classify::EASY){
             broomie::util::convertbrmFormat(sg, line, features);
           } else {
