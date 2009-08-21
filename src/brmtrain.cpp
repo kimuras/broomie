@@ -57,24 +57,35 @@ namespace broomie {
       std::cout << "start reading training data\n";
       tinysegmenterxx::Segmenter sg;
       while(std::getline(ifs, line)){
-        std::vector<std::string> features;
+        std::string className;
+        tinysegmenterxx::Segmentes features;
         if(mode & broomie::train::EASY){
+          std::string::size_type classdelimidx = line.find_first_of("\t");
+          if(classdelimidx == std::string::npos) continue;
+          unsigned int i;
+          for(i = 0; i < classdelimidx; i++){
+            className += line.at(i);
+          }
+          line.erase(0, i + 1);
           broomie::util::convertbrmFormat(sg, line, features);
         } else {
           features = broomie::util::split(line, "\t");
+          className = features.front();
+          if(classNamesMap.find(className) == classNamesMap.end()){
+            std::cerr << "unknown class:[" << className << "]" << std::endl;
+            std::cerr << "check class names of test data or traning data"
+                      << std::endl;
+            return false;
+          }
+          features.erase(features.begin());
         }
         if(features.size() < 2) continue;
-        broomie::Document *doc =
-          new broomie::Document((features.size() - 1) / 2);
-        std::string className;
+        unsigned int featuresSiz = features.size();
+        double docSiz = ( featuresSiz - 1) / 2;
+        broomie::Document *doc = new broomie::Document(docSiz+1);
         std::string feature;
-        for(unsigned int i = 0; i < features.size(); i++){
-          if(i < 1){
-            className = features[i];
-            if((classNamesMap.find(className)) == classNamesMap.end()){
-              std::cerr << "check class name [" << className << "]" << std::endl;
-            }
-          } else if(i % 2 > 0){
+        for(unsigned int i = 0; i < featuresSiz; i++){
+          if(i % 2 == 0){
             feature = features[i];
           } else {
             double point = atof(features[i].c_str());
@@ -84,11 +95,11 @@ namespace broomie {
         if(!cl.addTrainingData(className, *doc)){
           ok = false;
           std::string errMessage = cl.traceErr();
-          std::cerr << errMessage << std::endl;
+          std::cout << errMessage << std::endl;
         }
         delete doc;
         cnt++;
-        if (cnt % 1000 == 0){
+        if(cnt % 1000 == 0){
           std::cout << " (" << cnt << ")" << std::endl;
         } else if(cnt % 100 == 0){
           std::cout << ".";
@@ -119,19 +130,19 @@ namespace broomie {
                 << std::endl;
       std::cerr << std::endl;
       std::cerr << "  usage: " << fileName
-                << " -s dir -t train [options] "
+                << " -m dir -t train [options] "
                 << "[classes (class1 class2 class3 ... classN)]"
                 << std::endl;
       std::cerr << "   e.g.: " << fileName
                 << " -s dir/ -t train.tsv sports economic education"
                 << std::endl;
-      std::cerr << "    " << "-s, --save-dir=dir      "
+      std::cerr << "    " << "-m, --model-dir=dir      "
                 << "the save path for learning model."
                 << std::endl;
       std::cerr << "    " << "-t, --train-data=train  "
                 << "the file path of training data."
                 << std::endl;
-      std::cerr << "    -m, --method=method     "
+      std::cerr << "    -c, --classifier=method     "
                 << "the choice of classifer. default classifier is `bayes'."
                 << std::endl;
       std::cerr << "    classes                 "
@@ -163,15 +174,15 @@ namespace broomie {
       std::string fileName = argv[0];
       for(int i = 1; i < argc; i++){
         std::string argBuf = argv[i];
-        if(argBuf == "-m"){
+        if(argBuf == "-c"){
           method = argv[++i];
-        } else if((argBuf.find("--method=")) != std::string::npos){
+        } else if((argBuf.find("--classifier=")) != std::string::npos){
           unsigned int idx = argBuf.find("=");
           method = argv[i] + idx + 1;
-        } else if(argBuf == "-s"){
+        } else if(argBuf == "-m"){
           if(basePath.size() > 0) broomie::train::printUsage(fileName);
           basePath = argv[++i];
-        } else if((argBuf.find("--save-dir=")) != std::string::npos){
+        } else if((argBuf.find("--model-dir=")) != std::string::npos){
           if(basePath.size() > 0) broomie::train::printUsage(fileName);
           unsigned int idx = argBuf.find("=");
           basePath = argv[i] + idx + 1;

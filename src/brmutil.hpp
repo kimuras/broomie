@@ -118,11 +118,8 @@ namespace broomie {
     void convertbrmFormat(tinysegmenterxx::Segmenter& sg, std::string& line,
                           std::vector<std::string>& features)
     {
-      std::vector<std::string> lineElem = broomie::util::split(line, "\t");
-      if(lineElem.size() < 2) return;
-      features.push_back(lineElem[0]);
       tinysegmenterxx::Segmentes segs;
-      sg.segment(lineElem[1], segs);
+      sg.segment(line, segs);
       std::map<std::string, int> featureMap;
       for(unsigned int i = 0; i < segs.size(); i++){
           if(selectWord(segs[i])){

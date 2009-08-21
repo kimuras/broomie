@@ -41,7 +41,7 @@ namespace broomie {
     if(!point) point = 0.0;
     featureWord[featureNum].word = word;
     featureWord[featureNum].point = point;
-    featureNum++;
+    ++featureNum;
   }
 
 
@@ -245,13 +245,15 @@ namespace broomie {
     }
     for(int k = 0; k < classSettingNum; k++){
       if(classSettings[k].name == className){
-        if(!classSettings[k].model->put(features, documentFeatureNum, broomie::POSITIVE)){
+        if(!classSettings[k].model->put(features, documentFeatureNum,
+                                        broomie::POSITIVE)){
           ok = false;
           setErrMessage(broomie::BROOMIEEPUTTRAIN,
                         __FILE__, __LINE__, __func__, "check mode option");
         }
       } else {
-        if(!classSettings[k].model->put(features, documentFeatureNum, broomie::NEGATIVE)){
+        if(!classSettings[k].model->put(features, documentFeatureNum,
+                                        broomie::NEGATIVE)){
           ok = false;
           setErrMessage(broomie::BROOMIEEPUTTRAIN,
                         __FILE__, __LINE__, __func__, "check mode option");

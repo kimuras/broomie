@@ -172,45 +172,61 @@ namespace broomie {
         std::cerr << errMessage << std::endl;
         return false;
       }
-
       CList* classList = cl.getClassList();
       CMap classMap;
       for(unsigned int i = 0; i < (*classList).size(); i++){
         classMap[(*classList)[i]] = 1;
       }
-
       int cnt = 0;
       int collectNum = 0;
       ClassResult accuracyBuf;
       while(std::getline(ifs, line)){
-        std::vector<std::string> features;
-        if(imode & broomie::classify::EASY){
-          broomie::util::convertbrmFormat(sg, line, features);
-        } else {
-          features = broomie::util::split(line, "\t");
-        }
-        broomie::Document *doc =
-          new broomie::Document((features.size() - 1) / 2);
-        std::string docAttr("");
-        std::string feature("");
-        for(unsigned int i = 0; i < features.size(); i++){
-          if(i < 1){
-            docAttr = features[i];
-            if(clmode & TEST){
-              if(classMap.find(docAttr) == classMap.end()){
-                std::cerr << "unknown class:[" << docAttr << "]" << std::endl;
-                std::cerr << "check class names of test data or traning data"
-                          << std::endl;
-                return false;
-              }
-              std::cout << "correct answer:" << docAttr << std::endl;
-            } else if(clmode & CLASSIFY){
-              std::cout << docAttr;
+        std::string className("");
+        tinysegmenterxx::Segmentes features;
+        if(clmode & TEST){
+          if(imode & broomie::classify::EASY){
+            //unsigned int classdelimidx = line.find_first_of("\t");
+            std::string::size_type classdelimidx = line.find_first_of("\t");
+            if(classdelimidx == std::string::npos) continue;
+            unsigned int i;
+            for(i = 0; i < classdelimidx; i++){
+              className += line.at(i);
             }
-          } else if(i % 2 > 0){
+            line.erase(0, i + 1);
+            broomie::util::convertbrmFormat(sg, line, features);
+          } else {
+            features = broomie::util::split(line, "\t");
+            if(features.size() < 2) return false;
+            className = features.front();
+            if(classMap.find(className) == classMap.end()){
+              std::cerr << "unknown class:[" << className << "]" << std::endl;
+              std::cerr << "check class names of test data or traning data"
+                        << std::endl;
+              return false;
+            }
+            features.erase(features.begin());
+          }
+          std::cout << "correct answer:" << className << std::endl;
+        } else {
+          std::cout << line << std::endl;
+          if(imode & broomie::classify::EASY){
+            broomie::util::convertbrmFormat(sg, line, features);
+          } else {
+            features = broomie::util::split(line, "\t");
+          }
+          if(features.size() < 2) continue;
+        }
+        unsigned int featuresSiz = features.size();
+        if(featuresSiz < 1) continue;
+        double docSiz = ( featuresSiz - 1) / 2;
+        broomie::Document *doc = new broomie::Document(docSiz);
+        std::string feature("");
+        for(unsigned int i = 0; i < featuresSiz - 1; i++){ // なぜ-1なのか考察
+          if(i % 2 == 0){
             feature = features[i];
           } else {
             double point = atof(features[i].c_str());
+            //  std::cout << feature << ":" << point << std::endl;
             doc->addFeature(feature, point);
           }
         }
@@ -219,23 +235,23 @@ namespace broomie {
         std::string maxPointClass("");
         for(int i = 0; i < rs->getResultSetNum(); i++){
           float point;
-          std::string className = rs->getResult(i, point);
+          std::string resultClassName = rs->getResult(i, point);
           if(i == 0){
-            accuracyBuf[docAttr][className] += 1;
+            accuracyBuf[className][resultClassName] += 1;
             maxPoint = point;
-            maxPointClass = className;
+            maxPointClass = resultClassName;
           }
           if(clmode & TEST){
-            std::cout << "  " << className << ":" << point << std::endl;
+            std::cout << "  " << resultClassName << ":" << point << std::endl;
           } else if(clmode & CLASSIFY){
-            std::cout << "\t" << className << "\t" << point;
+            std::cout << "\t" << resultClassName << "\t" << point;
           }
         }
 
         if(clmode & TEST){
           std::cout << "system answer:" << maxPointClass + ':'
                     << maxPoint << std::endl;
-          if(maxPointClass == docAttr) {
+          if(maxPointClass == className) {
             std::cout << "==> true" << std::endl;
             std::cout << std::endl;
             collectNum++;
