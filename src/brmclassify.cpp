@@ -154,7 +154,6 @@ namespace broomie {
       }
       int classifierMethod = 0;
       std::string line;
-      tinysegmenterxx::Segmenter sg;
       while(std::getline(confifs, line)){
         std::vector<std::string> features = broomie::util::split(line, "\t");
         if(features[0] == DEFINE_METHOD_NAME){
@@ -180,39 +179,43 @@ namespace broomie {
       int cnt = 0;
       int collectNum = 0;
       ClassResult accuracyBuf;
+
+#ifdef ENABLE_EASY
+      broomie::util::SegmenterUtil seg;
+#endif
       while(std::getline(ifs, line)){
         std::string className("");
-        tinysegmenterxx::Segmentes features;
-        if(clmode & TEST){
-          if(imode & broomie::classify::EASY){
-            std::string::size_type classdelimidx = line.find_first_of("\t");
-            if(classdelimidx == std::string::npos) continue;
-            unsigned int i;
-            for(i = 0; i < classdelimidx; i++){
-              className += line.at(i);
-            }
-            line.erase(0, i + 1);
-            broomie::util::convertbrmFormat(sg, line, features);
-          } else {
-            features = broomie::util::split(line, "\t");
-            if(features.size() < 2) return false;
-            className = features.front();
-            if(classMap.find(className) == classMap.end()){
-              std::cerr << "unknown class:[" << className << "]" << std::endl;
-              std::cerr << "check class names of test data or traning data"
-                        << std::endl;
-              return false;
-            }
-            features.erase(features.begin());
+        std::string docId("");
+        std::vector<std::string> features;
+        if(imode & broomie::classify::EASY){
+          std::string::size_type classdelimidx = line.find_first_of("\t");
+          if(classdelimidx == std::string::npos) continue;
+          unsigned int i;
+          for(i = 0; i < classdelimidx; i++){
+            className += line.at(i);
           }
+          line.erase(0, i + 1);
+#ifdef ENABLE_EASY
+          seg.convertbrmFormat(line, features);
+#endif
           std::cout << "correct answer:" << className << std::endl;
-        } else {
-          if(imode & broomie::classify::EASY){
-            broomie::util::convertbrmFormat(sg, line, features);
-          } else {
-            features = broomie::util::split(line, "\t");
+        } else if(clmode & TEST) {
+          features = broomie::util::split(line, "\t");
+          if(features.size() < 2) return false;
+          className = features.front();
+          if(classMap.find(className) == classMap.end()){
+            std::cerr << "unknown class:[" << className << "]" << std::endl;
+            std::cerr << "check class names of test data or traning data"
+                      << std::endl;
+            return false;
           }
-          if(features.size() < 2) continue;
+          features.erase(features.begin());
+          std::cout << "correct answer:" << className << std::endl;
+        } else if(clmode & CLASSIFY){
+          features = broomie::util::split(line, "\t");
+          if(features.size() < 2) return false;
+          docId = features.front();
+          features.erase(features.begin());
         }
         unsigned int featuresSiz = features.size();
         if(featuresSiz < 1) continue;
@@ -231,6 +234,7 @@ namespace broomie {
         broomie::ResultSet *rs = cl.classify(*doc);
         float maxPoint = 0.0;
         std::string maxPointClass("");
+        if(clmode & CLASSIFY) std::cout << docId;
         for(int i = 0; i < rs->getResultSetNum(); i++){
           float point;
           std::string resultClassName = rs->getResult(i, point);
@@ -322,7 +326,6 @@ namespace broomie {
       std::cerr << "http://code.google.com/p/broomie/wiki/broomie_turorial_ja"
                 << std::endl;
       std::cerr << std::endl;
-      exit(EXIT_SUCCESS);
     }
 
     void printVersion()
@@ -334,7 +337,7 @@ namespace broomie {
     }
 
 
-    void procArgs(int argc, char** argv, int& clmode, int& imode,
+    bool procArgs(int argc, char** argv, int& clmode, int& imode,
                   std::string& basePath, std::string& testPath)
     {
       std::string fileName = argv[0];
@@ -345,48 +348,82 @@ namespace broomie {
         clmode = broomie::classify::CLASSIFY;
       } else if(argBuf == "-h" || argBuf == "--help"){
         broomie::classify::printUsage(fileName);
+        return false;
       } else if(argBuf == "-v" || argBuf == "--version"){
         broomie::classify::printVersion();
+        return false;
       } else {
         broomie::classify::printUsage(fileName);
       }
-      if(argc < 4) broomie::classify::printUsage(fileName);
+      if(argc < 4){
+        broomie::classify::printUsage(fileName);
+        return false;
+      }
       for(int i = 2; i < argc; i++){
         argBuf = argv[i];
         if(argBuf == "-m"){
-          if(basePath.size() > 0) broomie::classify::printUsage(fileName);
+          if(basePath.size() > 0){
+            broomie::classify::printUsage(fileName);
+            return false;
+          }
           basePath = argv[++i];
         } else if((argBuf.find("--model-dir=")) != std::string::npos){
-          if(basePath.size() > 0) broomie::classify::printUsage(fileName);
+          if(basePath.size() > 0){
+            broomie::classify::printUsage(fileName);
+            return false;
+          }
           unsigned int idx = argBuf.find("=");
           basePath = argv[i] + idx + 1;
         } else if(argBuf == "-t"){
-          if(testPath.size() > 0) broomie::classify::printUsage(fileName);
+          if(testPath.size() > 0){
+            broomie::classify::printUsage(fileName);
+            return false;
+          }
           testPath = argv[++i];
         } else if((argBuf.find("--test-data=")) != std::string::npos){
-          if(testPath.size() > 0) broomie::classify::printUsage(fileName);
+          if(testPath.size() > 0){
+            broomie::classify::printUsage(fileName);
+            return false;
+          }
           unsigned int idx = argBuf.find("=");
           testPath = argv[i] + idx + 1;
         } else if(argBuf == "-e" || argBuf == "--easy"){
+#ifdef ENABLE_EASY
           imode = broomie::classify::EASY;
+#else
+          std::cerr << "error : -e or --easy ";
+          std::cerr << "the easy mode is not on or segmenterxx ";
+          std::cerr << "is not installled." << std::endl;
+          std::cerr << "And need the sfotware tinysegmenterxx." << std::endl;
+          std::cerr << "./configure --enable-easy" << std::endl;
+          return false;
+#endif
         } else {
           broomie::classify::printUsage(fileName);
+          return false;
         }
       }
-      if(testPath.size() < 1 || basePath.size() < 1)
+      if(testPath.size() < 1 || basePath.size() < 1){
         broomie::classify::printUsage(fileName);
+        return false;
+      }
+      return true;
     }
   }
 }
 
 int main(int argc, char **argv)
 {
-  if(argc < 2) broomie::classify::printUsage(argv[0]);
+  if(argc < 2){
+    broomie::classify::printUsage(argv[0]);
+    return true;
+  }
   std::string basePath;
   std::string testPath;
   int clmode = broomie::classify::TEST;
   int imode  = broomie::classify::DEFAULT;
-  broomie::classify::procArgs(argc, argv, clmode, imode, basePath, testPath);
+  if(!broomie::classify::procArgs(argc, argv, clmode, imode, basePath, testPath))
+    return true;
 
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory." << std::endl;
@@ -399,5 +436,5 @@ int main(int argc, char **argv)
   std::cout << basePath << "\t" << testPath << "\t" << clmode<< std::endl;
   broomie::classify::classifyTestData(basePath, testPath, clmode, imode);
 
-  return 0;
+  return true;
 }

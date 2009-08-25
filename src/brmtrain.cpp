@@ -55,10 +55,14 @@ namespace broomie {
       std::string line;
       int cnt = 0;
       std::cout << "start reading training data\n";
-      tinysegmenterxx::Segmenter sg;
+
+#ifdef ENABLE_EASY
+      broomie::util::SegmenterUtil seg;
+#endif
+
       while(std::getline(ifs, line)){
         std::string className;
-        tinysegmenterxx::Segmentes features;
+        std::vector<std::string> features;
         if(mode & broomie::train::EASY){
           std::string::size_type classdelimidx = line.find_first_of("\t");
           if(classdelimidx == std::string::npos) continue;
@@ -67,7 +71,9 @@ namespace broomie {
             className += line.at(i);
           }
           line.erase(0, i + 1);
-          broomie::util::convertbrmFormat(sg, line, features);
+#ifdef ENABLE_EASY
+          seg.convertbrmFormat(line, features);
+#endif
         } else {
           features = broomie::util::split(line, "\t");
           className = features.front();
@@ -156,7 +162,6 @@ namespace broomie {
       std::cerr << "http://code.google.com/p/broomie/wiki/broomie_turorial_ja"
                 << std::endl;
       std::cerr << std::endl;
-      exit(EXIT_SUCCESS);
     }
 
     void printVersion()
@@ -164,10 +169,9 @@ namespace broomie {
       std::string body;
       broomie::util::copyRight(body);
       std::cerr << body << std::endl;
-      exit(EXIT_SUCCESS);
     }
 
-    void procArgs(int argc, char** argv, std::string& method,
+    bool procArgs(int argc, char** argv, std::string& method,
                   std::string& basePath, std::string& trainPath,
                   broomie::CList& classNames, int & mode)
     {
@@ -180,34 +184,59 @@ namespace broomie {
           unsigned int idx = argBuf.find("=");
           method = argv[i] + idx + 1;
         } else if(argBuf == "-m"){
-          if(basePath.size() > 0) broomie::train::printUsage(fileName);
+          if(basePath.size() > 0){
+            broomie::train::printUsage(fileName);
+            return false;
+          }
           basePath = argv[++i];
         } else if((argBuf.find("--model-dir=")) != std::string::npos){
-          if(basePath.size() > 0) broomie::train::printUsage(fileName);
+          if(basePath.size() > 0){
+            broomie::train::printUsage(fileName);
+            return false;
+          }
           unsigned int idx = argBuf.find("=");
           basePath = argv[i] + idx + 1;
         } else if(argBuf == "-t"){
-          if(trainPath.size() > 0) broomie::train::printUsage(fileName);
+          if(trainPath.size() > 0){
+            broomie::train::printUsage(fileName);
+            return false;
+          }
           trainPath = argv[++i];
         } else if((argBuf.find("--train-data=")) != std::string::npos){
-          if(trainPath.size() > 0) broomie::train::printUsage(fileName);
+          if(trainPath.size() > 0){
+            broomie::train::printUsage(fileName);
+            return false;
+          }
           unsigned int idx = argBuf.find("=");
           trainPath = argv[i] + idx + 1;
         } else if(argBuf == "-e" || argBuf == "--easy"){
+#ifdef ENABLE_EASY
           mode = broomie::train::EASY;
+#else
+          std::cerr << "error : -e or --easy ";
+          std::cerr << "the easy mode is not on or segmenterxx ";
+          std::cerr << "is not installled." << std::endl;
+          std::cerr << "And need the sfotware tinysegmenterxx." << std::endl;
+          std::cerr << "./configure --enable-easy" << std::endl;
+          return false;
+#endif
         } else if(argBuf == "--help" || argBuf == "-h"){
           broomie::train::printUsage(fileName);
+          return false;
         } else if(argBuf == "--version" || argBuf == "-v"){
           broomie::train::printVersion();
+          return false;
         } else {
           if(basePath.size() > 0 && trainPath.size() > 0)
             classNames.push_back(argv[i]);
         }
       }
-      if(basePath.size() < 1 && trainPath.size() < 1)
+      if(basePath.size() < 1 && trainPath.size() < 1){
         broomie::train::printUsage(fileName);
+        return false;
+      }
+      return true;
     }
-
   }
 }
 
@@ -218,8 +247,8 @@ int main(int argc, char **argv)
   std::string trainPath;
   broomie::CList classNames;
   int mode = broomie::train::DEFAULT;
-  broomie::train::procArgs(argc, argv, method, basePath,
-                           trainPath, classNames, mode);
+  if(!broomie::train::procArgs(argc, argv, method, basePath,
+                               trainPath, classNames, mode)) return false;
 
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory."
@@ -242,5 +271,5 @@ int main(int argc, char **argv)
     return false;
   }
 
-  return 0;
+  return true;
 }
