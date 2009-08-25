@@ -1,4 +1,13 @@
-/*******************************************************************************
+/*
+ * Copyright (C) 2009 Shunya Kimura <brmtrain@gmail.com>
+ * All Rights Reserved.
+ *
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ */
+
+
+/*
  *
  * Test cases for broomie
  *
@@ -15,7 +24,7 @@
  *   ASSERT_GT(val1, val2)       : val1 > val2
  *   ASSERT_GE(val1, val2)       : val1 >= val2
  *
- ******************************************************************************/
+ */
 
 #include <dirent.h>
 #include <sys/stat.h>

@@ -15,8 +15,7 @@ namespace broomie {
 
 
     bool createTrain(std::string basePath, std::string trainPath,
-                     CList& classNames, int classifierMethod,
-                     int mode)
+                     CList& classNames, int classifierMethod)
     {
       bool ok = true;
       std::ifstream ifs(trainPath.c_str());
@@ -56,35 +55,18 @@ namespace broomie {
       int cnt = 0;
       std::cout << "start reading training data\n";
 
-#ifdef ENABLE_EASY
-      broomie::util::SegmenterUtil seg;
-#endif
-
       while(std::getline(ifs, line)){
         std::string className;
         std::vector<std::string> features;
-        if(mode & broomie::train::EASY){
-          std::string::size_type classdelimidx = line.find_first_of("\t");
-          if(classdelimidx == std::string::npos) continue;
-          unsigned int i;
-          for(i = 0; i < classdelimidx; i++){
-            className += line.at(i);
-          }
-          line.erase(0, i + 1);
-#ifdef ENABLE_EASY
-          seg.convertbrmFormat(line, features);
-#endif
-        } else {
-          features = broomie::util::split(line, "\t");
-          className = features.front();
-          if(classNamesMap.find(className) == classNamesMap.end()){
-            std::cerr << "unknown class:[" << className << "]" << std::endl;
-            std::cerr << "check class names of test data or traning data"
-                      << std::endl;
-            return false;
-          }
-          features.erase(features.begin());
+        features = broomie::util::split(line, "\t");
+        className = features.front();
+        if(classNamesMap.find(className) == classNamesMap.end()){
+          std::cerr << "unknown class:[" << className << "]" << std::endl;
+          std::cerr << "check class names of test data or traning data"
+                    << std::endl;
+          return false;
         }
+        features.erase(features.begin());
         if(features.size() < 2) continue;
         unsigned int featuresSiz = features.size();
         double docSiz = ( featuresSiz - 1) / 2;
@@ -173,7 +155,7 @@ namespace broomie {
 
     bool procArgs(int argc, char** argv, std::string& method,
                   std::string& basePath, std::string& trainPath,
-                  broomie::CList& classNames, int & mode)
+                  broomie::CList& classNames)
     {
       std::string fileName = argv[0];
       for(int i = 1; i < argc; i++){
@@ -209,17 +191,6 @@ namespace broomie {
           }
           unsigned int idx = argBuf.find("=");
           trainPath = argv[i] + idx + 1;
-        } else if(argBuf == "-e" || argBuf == "--easy"){
-#ifdef ENABLE_EASY
-          mode = broomie::train::EASY;
-#else
-          std::cerr << "error : -e or --easy ";
-          std::cerr << "the easy mode is not on or segmenterxx ";
-          std::cerr << "is not installled." << std::endl;
-          std::cerr << "And need the sfotware tinysegmenterxx." << std::endl;
-          std::cerr << "./configure --enable-easy" << std::endl;
-          return false;
-#endif
         } else if(argBuf == "--help" || argBuf == "-h"){
           broomie::train::printUsage(fileName);
           return false;
@@ -246,9 +217,8 @@ int main(int argc, char **argv)
   std::string basePath;
   std::string trainPath;
   broomie::CList classNames;
-  int mode = broomie::train::DEFAULT;
   if(!broomie::train::procArgs(argc, argv, method, basePath,
-                               trainPath, classNames, mode)) return false;
+                               trainPath, classNames)) return false;
 
   if(!broomie::util::checkDir(basePath)){
     std::cerr << "error: [" << basePath << "] is not directory."
@@ -263,7 +233,7 @@ int main(int argc, char **argv)
 
   if(method == METHOD_BAYES){ //algorithm
     if(!broomie::train::createTrain(basePath, trainPath, classNames,
-                                    broomie::BAYES, mode)) return false;
+                                    broomie::BAYES)) return false;
   } else {
     std::cerr << "error: unknown classifier method [" <<
       method << "] (`bayes' only)"

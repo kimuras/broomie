@@ -23,12 +23,6 @@ AC_ARG_ENABLE(test,
 )
 AM_CONDITIONAL(ENABLE_TEST, test "$enable_test" = "yes")
 
-AC_ARG_ENABLE(easy,
-[  --enable-easy           enable easy mode.[default no]])
-if test "$enable_easy" = "yes"; then
-  CPPFLAGS="$CFLAGS -DENABLE_EASY"
-fi
-
 
 # Checks for programs.
 AC_PROG_CXX
@@ -58,13 +52,6 @@ if [ test $enable_test = "yes" ]; then
    AC_CHECK_LIB(gtest, main)
    AC_CHECK_HEADER(gtest/gtest.h, true, AC_MSG_ERROR([gtest/gtest.h is required]))
 fi
-
-if [ test $enable_easy = "yes" ]; then
-   AC_CHECK_HEADER(TinySegmenterxx/tinysegmenterxx.hpp, true, AC_MSG_ERROR([TinySegmenterxx/tinysegmenterxx.hpp is required]))
-   AC_CHECK_HEADER(TinySegmenterxx/tinysegmenterxx_train.hpp, true, AC_MSG_ERROR([TinySegmenterxx/tinysegmenterxx.hpp is required]))
-fi
-
-############################################################## Add TinySegmenterxx(here)
 
 
 # Checks for typedefs, structures, and compiler characteristics.

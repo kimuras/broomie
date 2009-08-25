@@ -1,6 +1,14 @@
+/*
+ * Copyright (C) 2009 Shunya Kimura <brmtrain@gmail.com>
+ * All Rights Reserved.
+ *
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ */
+
+#include <iomanip>
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
-#include <iomanip>
 
 const std::string CONFIG_NAME  = "broomie.conf";
 const std::string METHOD_BAYES = "bayes";
@@ -15,11 +23,6 @@ namespace broomie {
     enum {
       TEST     = 1,
       CLASSIFY = 2,
-    };
-
-    enum {
-      DEFAULT = 1,
-      EASY    = 2,
     };
 
     ClassVal* getRecall(ClassResult& accuracyBuf, CList* classList)
@@ -135,8 +138,7 @@ namespace broomie {
       std::cout << std::endl;
     }
 
-    bool classifyTestData(std::string basePath, std::string testPath,
-                          int clmode, int imode)
+    bool classifyTestData(std::string basePath, std::string testPath, int clmode)
     {
       bool ok = true;
       std::ifstream ifs(testPath.c_str(), std::ios::in);
@@ -179,27 +181,11 @@ namespace broomie {
       int cnt = 0;
       int collectNum = 0;
       ClassResult accuracyBuf;
-
-#ifdef ENABLE_EASY
-      broomie::util::SegmenterUtil seg;
-#endif
       while(std::getline(ifs, line)){
         std::string className("");
         std::string docId("");
         std::vector<std::string> features;
-        if(imode & broomie::classify::EASY){
-          std::string::size_type classdelimidx = line.find_first_of("\t");
-          if(classdelimidx == std::string::npos) continue;
-          unsigned int i;
-          for(i = 0; i < classdelimidx; i++){
-            className += line.at(i);
-          }
-          line.erase(0, i + 1);
-#ifdef ENABLE_EASY
-          seg.convertbrmFormat(line, features);
-#endif
-          std::cout << "correct answer:" << className << std::endl;
-        } else if(clmode & TEST) {
+        if(clmode & TEST) {
           features = broomie::util::split(line, "\t");
           if(features.size() < 2) return false;
           className = features.front();
@@ -337,7 +323,7 @@ namespace broomie {
     }
 
 
-    bool procArgs(int argc, char** argv, int& clmode, int& imode,
+    bool procArgs(int argc, char** argv, int& clmode,
                   std::string& basePath, std::string& testPath)
     {
       std::string fileName = argv[0];
@@ -387,17 +373,6 @@ namespace broomie {
           }
           unsigned int idx = argBuf.find("=");
           testPath = argv[i] + idx + 1;
-        } else if(argBuf == "-e" || argBuf == "--easy"){
-#ifdef ENABLE_EASY
-          imode = broomie::classify::EASY;
-#else
-          std::cerr << "error : -e or --easy ";
-          std::cerr << "the easy mode is not on or segmenterxx ";
-          std::cerr << "is not installled." << std::endl;
-          std::cerr << "And need the sfotware tinysegmenterxx." << std::endl;
-          std::cerr << "./configure --enable-easy" << std::endl;
-          return false;
-#endif
         } else {
           broomie::classify::printUsage(fileName);
           return false;
@@ -421,8 +396,7 @@ int main(int argc, char **argv)
   std::string basePath;
   std::string testPath;
   int clmode = broomie::classify::TEST;
-  int imode  = broomie::classify::DEFAULT;
-  if(!broomie::classify::procArgs(argc, argv, clmode, imode, basePath, testPath))
+  if(!broomie::classify::procArgs(argc, argv, clmode, basePath, testPath))
     return true;
 
   if(!broomie::util::checkDir(basePath)){
@@ -434,7 +408,7 @@ int main(int argc, char **argv)
     return false;
   }
   std::cout << basePath << "\t" << testPath << "\t" << clmode<< std::endl;
-  broomie::classify::classifyTestData(basePath, testPath, clmode, imode);
+  broomie::classify::classifyTestData(basePath, testPath, clmode);
 
   return true;
 }

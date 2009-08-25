@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2009 Shunya Kimura <brmtrain@gmail.com>
+ * All Rights Reserved.
+ *
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ */
+
+
 #include <ctime>
 #include <iterator>
 #include <sys/types.h>
@@ -5,10 +14,6 @@
 #include <time.h> // may be not need
 #include <stdio.h>
 #include "libbrm.hpp"
-
-#ifdef ENABLE_EASY
-#include <TinySegmenterxx/tinysegmenterxx.hpp>
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -82,72 +87,6 @@ namespace broomie {
         return false;
       }
     }
-
-#ifdef ENABLE_EASY
-    class SegmenterUtil {
-    public:
-      SegmenterUtil() : sg(){};
-      ~SegmenterUtil(){};
-
-      void convertbrmFormat(std::string& line, std::vector<std::string>& features)
-      {
-        tinysegmenterxx::Segmentes segs;
-        sg.segment(line, segs);
-        std::map<std::string, int> featureMap;
-        for(unsigned int i = 0; i < segs.size(); i++){
-          if(selectWord(segs[i])){
-            featureMap[segs[i]] += 1;
-          }
-        }
-        std::map<std::string, int>::iterator itr;
-        for(itr = featureMap.begin(); itr != featureMap.end(); itr++){
-          features.push_back(itr->first);
-          char* valBuf = tcsprintf("%d", itr->second);
-          features.push_back(valBuf);
-          std::free(valBuf);
-        }
-      }
-
-    private:
-      tinysegmenterxx::Segmenter sg;
-
-      bool selectWord(std::string& word)
-      {
-        bool rv = false;
-        if(tcregexmatch(word.c_str(), "^[a-zA-Z]*$")) return true;
-        unsigned int inputSiz = word.size();
-        int stackSiz = inputSiz + 1;
-        uint16_t* ary = NULL;
-        if(inputSiz + 1 >= MAX_WORD_BUF_SIZ){
-          stackSiz = 0;
-          ary = new uint16_t[inputSiz];
-        }
-        uint16_t stack[stackSiz + 1];
-        if(!ary) ary = stack;
-        int anum;
-        tinysegmenterxx::util::utftoucs(word.c_str(), ary, &anum);
-        ary[anum] = 0x0000;
-        std::map<std::string, int> charClassMap;
-        for(int i = 0; i < anum; ++i){
-          uint16_t ucsChar = ary[i];
-          std::string cTypeBuf =
-            tinysegmenterxx::util::getCharClass(ucsChar);
-          charClassMap[cTypeBuf] += 1;
-        }
-        if(charClassMap.size() == 1){
-          std::map<std::string, int>::iterator itr = charClassMap.begin();
-          if(itr->first == "H" || itr->first == "K"){
-            rv = true;
-          } else if(itr->first == "I"){
-            if(word.size() > MIN_HIRAGANA_SIZ) rv = true;
-          }
-        }
-        if(ary != stack) delete[] ary;
-        return rv;
-      }
-    };
-#endif
-
   }
 
   namespace testutil {

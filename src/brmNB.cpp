@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2009 Shunya Kimura <brmtrain@gmail.com>
+ * All Rights Reserved.
+ *
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ */
+
+
 #include "brmNB.hpp"
 
 namespace broomie {
