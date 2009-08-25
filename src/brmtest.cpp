@@ -34,8 +34,8 @@
 
 const std::string CONFIG_NAME          = "broomie.conf";
 const std::string TEST_DIR_PATH        = "/tmp/broomie_test/";
-const std::string TRAIN_PATH           = "../test_data/train";
-const std::string TEST_PATH            = "../test_data/test_labeled";
+const std::string TRAIN_PATH           = "../tests/test_data/train";
+const std::string TEST_PATH            = "../tests/test_data/test_labeled";
 const unsigned int ZERO                = 0;
 const unsigned int TEST_NUM            = 100;
 const unsigned int CLASSIFIER_TYPE_NUM = 1;   /* bayes only */
