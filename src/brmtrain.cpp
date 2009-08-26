@@ -153,6 +153,15 @@ namespace broomie {
       std::cerr << body << std::endl;
     }
 
+    void checkPath(std::string& path)
+    {
+      std::string lastChar;
+      lastChar = *((path.end()) - 1);
+      if(lastChar != "/"){
+        path.append("/");
+      }
+    }
+
     bool procArgs(int argc, char** argv, std::string& method,
                   std::string& basePath, std::string& trainPath,
                   broomie::CList& classNames)
@@ -171,6 +180,7 @@ namespace broomie {
             return false;
           }
           basePath = argv[++i];
+          broomie::train::checkPath(basePath);
         } else if((argBuf.find("--model-dir=")) != std::string::npos){
           if(basePath.size() > 0){
             broomie::train::printUsage(fileName);
@@ -178,6 +188,7 @@ namespace broomie {
           }
           unsigned int idx = argBuf.find("=");
           basePath = argv[i] + idx + 1;
+          broomie::train::checkPath(basePath);
         } else if(argBuf == "-t"){
           if(trainPath.size() > 0){
             broomie::train::printUsage(fileName);

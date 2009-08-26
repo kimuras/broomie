@@ -322,6 +322,15 @@ namespace broomie {
       exit(EXIT_SUCCESS);
     }
 
+    void checkPath(std::string& path)
+    {
+      std::string lastChar;
+      lastChar = *((path.end()) - 1);
+      if(lastChar != "/"){
+        path.append("/");
+      }
+    }
+
 
     bool procArgs(int argc, char** argv, int& clmode,
                   std::string& basePath, std::string& testPath)
@@ -353,6 +362,7 @@ namespace broomie {
             return false;
           }
           basePath = argv[++i];
+          broomie::classify::checkPath(basePath);
         } else if((argBuf.find("--model-dir=")) != std::string::npos){
           if(basePath.size() > 0){
             broomie::classify::printUsage(fileName);
@@ -360,6 +370,7 @@ namespace broomie {
           }
           unsigned int idx = argBuf.find("=");
           basePath = argv[i] + idx + 1;
+          broomie::classify::checkPath(basePath);
         } else if(argBuf == "-t"){
           if(testPath.size() > 0){
             broomie::classify::printUsage(fileName);
