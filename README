@@ -1,13 +1,29 @@
+================================================================
+ Broomie : a pluggable classifier framework
+ Copyright (C) 2009 Shunya Kimura
+================================================================
 
+The documentes in the Broomie packages is below:
+
+  - README    : thie file
+  - COPYING   : license
+  - ChangeLog : history of enhancement
+  - NEWS      : information of modification
+  - AUTHORS   : authors of Broomie
+  - INSTALL   : how to install
+
+Contents of the directory tree is below.
+
+  ./src/   : sources of Broomie
+  ./tests/ : test script and test data
+
+The detailed document is below:
+
+  http://code.google.com/p/broomie/w/list
 
 For installation see INSTALL
 
-PS: If you have downloaded source codes from SVN repository then
-you need to generate "configure" script by using following 
-command
 
+MEMO
 $ autoreconf --install
-
-For subsequent installtion see INSTALL 
-
 # aclocal; autoheader; automake -a -c; autoconf
