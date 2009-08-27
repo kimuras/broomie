@@ -21,7 +21,7 @@ namespace broomie {
     typedef std::map<std::string, double> ClassVal;
 
     enum {
-      TEST     = 1,
+      ACCURACY = 1,
       CLASSIFY = 2,
     };
 
@@ -41,7 +41,8 @@ namespace broomie {
             NumFalse += static_cast<double>(itr->second[(*classList)[j]]);
           }
         }
-        double recallBuf = NumTrue / (NumFalse + NumTrue);
+        double recallBuf = 0;
+        if(NumTrue != 0) recallBuf = NumTrue / (NumFalse + NumTrue);
         sumRecall += recallBuf;
         (*recall)[(*classList)[i]] = recallBuf;
       }
@@ -138,7 +139,17 @@ namespace broomie {
       std::cout << std::endl;
     }
 
-    bool classifyTestData(std::string basePath, std::string testPath, int clmode)
+    void initAccuracy(ClassResult& accuracyBuf, CList* classList)
+    {
+      for(unsigned int i = 0; i < (*classList).size(); i++){
+        for(unsigned int j = 0; j < (*classList).size(); j++){
+          accuracyBuf[(*classList)[i]][(*classList)[j]] = 0;
+        }
+      }
+    }
+
+    bool classifyTestData(std::string basePath,
+                          std::string testPath, int clmode, int pmode)
     {
       bool ok = true;
       std::ifstream ifs(testPath.c_str(), std::ios::in);
@@ -181,11 +192,12 @@ namespace broomie {
       int cnt = 0;
       int collectNum = 0;
       ClassResult accuracyBuf;
+      initAccuracy(accuracyBuf, classList);
       while(std::getline(ifs, line)){
         std::string className("");
         std::string docId("");
         std::vector<std::string> features;
-        if(clmode & TEST) {
+        if(clmode & broomie::classify::ACCURACY) {
           features = broomie::util::split(line, "\t");
           if(features.size() < 2) return false;
           className = features.front();
@@ -196,7 +208,7 @@ namespace broomie {
             return false;
           }
           features.erase(features.begin());
-          std::cout << "correct answer:" << className << std::endl;
+          if(pmode) std::cout << "correct answer:" << className << std::endl;
         } else if(clmode & CLASSIFY){
           features = broomie::util::split(line, "\t");
           if(features.size() < 2) return false;
@@ -208,12 +220,11 @@ namespace broomie {
         double docSiz = ( featuresSiz - 1) / 2;
         broomie::Document *doc = new broomie::Document(docSiz);
         std::string feature("");
-        for(unsigned int i = 0; i < featuresSiz - 1; i++){ // なぜ-1なのか考察
+        for(unsigned int i = 0; i < featuresSiz - 1; i++){
           if(i % 2 == 0){
             feature = features[i];
           } else {
             double point = atof(features[i].c_str());
-            //  std::cout << feature << ":" << point << std::endl;
             doc->addFeature(feature, point);
           }
         }
@@ -229,25 +240,27 @@ namespace broomie {
             maxPoint = point;
             maxPointClass = resultClassName;
           }
-          if(clmode & TEST){
-            std::cout << "  " << resultClassName << ":" << point << std::endl;
+          if(clmode & broomie::classify::ACCURACY){
+            if(pmode)
+              std::cout << "  " << resultClassName << ":" << point << std::endl;
           } else if(clmode & CLASSIFY){
             std::cout << "\t" << resultClassName << "\t" << point;
           }
         }
 
-        if(clmode & TEST){
-          std::cout << "system answer:" << maxPointClass + ':'
-                    << maxPoint << std::endl;
-          if(maxPointClass == className) {
-            std::cout << "==> true" << std::endl;
-            std::cout << std::endl;
-            collectNum++;
-          } else {
-            std::cout << "==> false" << std::endl;
-            std::cout << line << std::endl;
-            std::cout << "---------" << std::endl;
-            std::cout << std::endl;
+        if(clmode & broomie::classify::ACCURACY){
+          if(pmode){
+            std::cout << "system answer:" << maxPointClass + ':'
+                      << maxPoint << std::endl;
+            if(maxPointClass == className) {
+              std::cout << "==> true" << std::endl;
+              std::cout << std::endl;
+              collectNum++;
+            } else {
+              std::cout << line << std::endl;
+              std::cout << "---------" << std::endl;
+              std::cout << std::endl;
+            }
           }
         } else if(clmode & CLASSIFY){
           std::cout << std::endl;
@@ -257,7 +270,7 @@ namespace broomie {
         cnt++;
       }
 
-      if(clmode & TEST){
+      if(clmode & broomie::classify::ACCURACY){
         ClassVal* precision = getPrecision(accuracyBuf, classList);
         ClassVal* recall = getRecall(accuracyBuf, classList);
         printSummary(collectNum, cnt);
@@ -302,7 +315,7 @@ namespace broomie {
       std::cerr << "    " << "-m, --model-dir=dir      "
                 << "the path for learning model."
                 << std::endl;
-      std::cerr << "    " << "-t, --test-datad=test    "
+      std::cerr << "    " << "-t, --test-data=test    "
                 << "test examples, classifing data."
                 << std::endl;
       std::cerr << std::endl;
@@ -332,13 +345,13 @@ namespace broomie {
     }
 
 
-    bool procArgs(int argc, char** argv, int& clmode,
+    bool procArgs(int argc, char** argv, int& clmode, int& pmode,
                   std::string& basePath, std::string& testPath)
     {
       std::string fileName = argv[0];
       std::string argBuf   = argv[1];
       if(argBuf == "accuracy"){
-        clmode = broomie::classify::TEST;
+        clmode = broomie::classify::ACCURACY;
       } else if(argBuf == "classify"){
         clmode = broomie::classify::CLASSIFY;
       } else if(argBuf == "-h" || argBuf == "--help"){
@@ -350,7 +363,7 @@ namespace broomie {
       } else {
         broomie::classify::printUsage(fileName);
       }
-      if(argc < 4){
+      if(argc < 6){
         broomie::classify::printUsage(fileName);
         return false;
       }
@@ -384,6 +397,8 @@ namespace broomie {
           }
           unsigned int idx = argBuf.find("=");
           testPath = argv[i] + idx + 1;
+        } else if(argBuf == "-pv"){
+          pmode = 1;
         } else {
           broomie::classify::printUsage(fileName);
           return false;
@@ -406,8 +421,9 @@ int main(int argc, char **argv)
   }
   std::string basePath;
   std::string testPath;
-  int clmode = broomie::classify::TEST;
-  if(!broomie::classify::procArgs(argc, argv, clmode, basePath, testPath))
+  int clmode = broomie::classify::ACCURACY;
+  int pmode = 0;
+  if(!broomie::classify::procArgs(argc, argv, clmode, pmode, basePath, testPath))
     return true;
 
   if(!broomie::util::checkDir(basePath)){
@@ -418,8 +434,9 @@ int main(int argc, char **argv)
     std::cerr << "error: [" << testPath << "] is not regular file." << std::endl;
     return false;
   }
-  std::cout << basePath << "\t" << testPath << "\t" << clmode<< std::endl;
-  broomie::classify::classifyTestData(basePath, testPath, clmode);
+
+  if(!broomie::classify::classifyTestData(basePath, testPath, clmode, pmode))
+    return false;
 
   return true;
 }

@@ -40,8 +40,8 @@ bin_PROGRAMS = brmtrain$(EXEEXT) brmclassify$(EXEEXT) $(am__EXEEXT_1) \
 	$(am__EXEEXT_2)
 @ENABLE_FCGI_TRUE@am__append_1 = classifier.fcgi
 @ENABLE_TEST_TRUE@am__append_2 = brmtest brmNBtest
-@ENABLE_TEST_TRUE@check_PROGRAMS = brmtest$(EXEEXT)
-@ENABLE_TEST_TRUE@TESTS = brmtest$(EXEEXT)
+@ENABLE_TEST_TRUE@check_PROGRAMS = brmtest$(EXEEXT) brmNBtest$(EXEEXT)
+@ENABLE_TEST_TRUE@TESTS = brmtest$(EXEEXT) brmNBtest$(EXEEXT)
 subdir = src
 DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -885,8 +885,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES \
 	uninstall-am uninstall-binPROGRAMS uninstall-libLTLIBRARIES \
 	uninstall-pkgincludeHEADERS
 
-
-#brmNBtest.cpp
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

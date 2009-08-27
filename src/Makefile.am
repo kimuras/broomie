@@ -34,7 +34,7 @@ if ENABLE_FCGI
 endif
 
 if ENABLE_TEST
-    check_PROGRAMS = brmtest
+    check_PROGRAMS = brmtest brmNBtest
     brmtest_CPPFLAGS = -Wall
     brmtest_LDADD    = libbrm.la
     brmtest_LDFLAGS  = -L/usr/local/lib -lgtest
@@ -45,8 +45,5 @@ if ENABLE_TEST
     brmNBtest_LDFLAGS  = -L/usr/local/lib -lgtest
     brmNBtest_SOURCES  = brmNBtest.cpp
 
-    TESTS = brmtest
+    TESTS = brmtest brmNBtest
 endif
-
-
-#brmNBtest.cpp

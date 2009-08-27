@@ -1,6 +1,7 @@
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
 #include <iterator>
+#include <cstdlib>
 
 const std::string CONFIG_NAME  = "broomie.conf";
 const std::string METHOD_BAYES = "bayes";
@@ -28,6 +29,7 @@ namespace broomie {
       if(!cl.beginMakingModel(classNames, classifierMethod)){
         std::string errMessage = cl.traceErr();
         std::cerr << errMessage << std::endl;
+        delete modelFactory;
         return false;
       }
       std::string confPath = basePath + CONFIG_NAME;
@@ -64,6 +66,11 @@ namespace broomie {
           std::cerr << "unknown class:[" << className << "]" << std::endl;
           std::cerr << "check class names of test data or traning data"
                     << std::endl;
+          if(!cl.endMakingModel()){
+            std::string errMessage = cl.traceErr();
+            std::cerr << errMessage << std::endl;
+          }
+          delete modelFactory;
           return false;
         }
         features.erase(features.begin());
@@ -251,6 +258,5 @@ int main(int argc, char **argv)
               << std::endl;
     return false;
   }
-
   return true;
 }

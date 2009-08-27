@@ -32,8 +32,6 @@
 #include "brmutil.hpp"
 
 const std::string TEST_DIR_PATH        = "/tmp/broomie_test/";
-const std::string TRAIN_PATH           = "../tests/test_data/train";
-const std::string TEST_PATH            = "../tests/test_data/test";
 const unsigned int TEST_NUM            = 100;
 
 unsigned int numPosTrainBuf = 0;
