@@ -299,10 +299,8 @@ namespace broomie {
                 << " : the utility to classify example with broomie"
                 << std::endl;
       std::cerr << std::endl;
-      std::cerr << "  usage: " << fileName
-                << " [accuracy|classify] -m dir -t test_data" << std::endl;
       std::cerr << "  " << fileName
-                << " accuracy -m dir -t test_data(labbeled)" << std::endl;
+                << " accuracy [-pv] -m dir -t test_data(labbeled)" << std::endl;
       std::cerr << "  " << fileName
                 << " classify -m dir -t test_data(unlabbeled)" << std::endl;
       std::cerr << "    " << "accuracy                 "
@@ -315,8 +313,11 @@ namespace broomie {
       std::cerr << "    " << "-m, --model-dir=dir      "
                 << "the path for learning model."
                 << std::endl;
-      std::cerr << "    " << "-t, --test-data=test    "
+      std::cerr << "    " << "-t, --test-data=test     "
                 << "test examples, classifing data."
+                << std::endl;
+      std::cerr << "    " << "-pv    "
+                << "                  print each result of classification."
                 << std::endl;
       std::cerr << std::endl;
       std::cerr << "for more information about this program, "
@@ -326,6 +327,8 @@ namespace broomie {
                 << std::endl;
       std::cerr << std::endl;
     }
+
+
 
     void printVersion()
     {
