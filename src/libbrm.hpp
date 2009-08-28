@@ -34,7 +34,7 @@ namespace broomie {
   typedef std::map<std::string, int> CMap;
 
   /* constant variables */
-  const std::string DEFINE_BASE_DIR_NAME     = "BASEDIR";
+  const std::string DEFINE_BASE_DIR_NAME     = "DB_PATH";
   const std::string DEFINE_METHOD_NAME       = "METHOD";
   const std::string KEY_DIC_MAX_NUM          = "wordDicMaxNum";
   const std::string WORD_DIC_DB_NAME         = "wordDic.hdb";

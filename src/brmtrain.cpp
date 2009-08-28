@@ -129,7 +129,7 @@ namespace broomie {
                 << "[classes (class1 class2 class3 ... classN)]"
                 << std::endl;
       std::cerr << "   e.g.: " << fileName
-                << " -s dir/ -t train.tsv sports economic education"
+                << " -m dir/ -t train.tsv sports economic it"
                 << std::endl;
       std::cerr << "    " << "-m, --model-dir=dir      "
                 << "the save path for learning model."

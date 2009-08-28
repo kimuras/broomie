@@ -8,9 +8,10 @@
 
 #include <math.h>
 #include <iterator>
-#include <fcgi_stdio.h>
+
 #include "brmalgorithm.hpp"
 #include "brmutil.hpp"
+#include <fcgi_stdio.h>
 
 const std::string INTERFACE_CONFIG_NAME = "./broomie.conf";
 const std::string METHOD_BAYES = "bayes";
@@ -123,7 +124,7 @@ public:
        (rp = getenv("CONTENT_LENGTH")) != NULL && (len = atoi(rp)) > 0){
       if(len > UPLOADMAX) len = UPLOADMAX;
       buf = static_cast<char*>(tccalloc(len + 1, 1));
-      if(static_cast<int>(fread(buf, 1, len, stdin)) != len){
+            if(static_cast<int>(fread(buf, 1, len, stdin)) != len){
         tcfree(buf);
         buf = NULL;
       }
