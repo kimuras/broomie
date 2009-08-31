@@ -276,7 +276,7 @@ namespace broomie {
   /* Document object TEST */
   TEST(broomie, Document_Document){
     for(unsigned int i = 0; i < TEST_NUM; i++){
-      broomie::Document *doc = new broomie::Document(broomie::testutil::createRandomVal<double>(100));
+      broomie::Document *doc = new broomie::Document(broomie::testutil::createRandomVal<int>(100));
       delete doc;
     }
   }
@@ -286,7 +286,7 @@ namespace broomie {
     broomie::Document *doc = new broomie::Document(TEST_NUM);
     int featureNum = 0;
     for(unsigned int i = 0; i < TEST_NUM; i++){
-      int featureLength = broomie::testutil::createRandomVal<double>(50);
+      int featureLength = broomie::testutil::createRandomVal<int>(50);
       featureLength++;
       std::string feature = broomie::testutil::createRandomString(featureLength);
       double point = broomie::testutil::createRandomVal<double>(100);
@@ -313,7 +313,7 @@ namespace broomie {
     broomie::Document *doc = new broomie::Document(TEST_NUM);
     int featureNum = 0;
     for(unsigned int i = 0; i < TEST_NUM; i++){
-      int featureLength = broomie::testutil::createRandomVal<double>(50);
+      int featureLength = broomie::testutil::createRandomVal<int>(50);
       featureLength++;
       std::string feature = broomie::testutil::createRandomString(featureLength);
       double point = broomie::testutil::createRandomVal<double>(100);

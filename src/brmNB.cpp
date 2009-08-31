@@ -202,7 +202,7 @@ namespace broomie {
       return uniqVal;
     }
 
-    void NaiveBayes::smoothing(double& val, int sumFeatureVal)
+    void NaiveBayes::smoothing(double& val, double sumFeatureVal)
     {
       val = (val + broomie::NB::SMOOTHING_W) /
         (sumFeatureVal + (broomie::NB::SMOOTHING_W * uniqVal));

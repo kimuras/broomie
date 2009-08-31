@@ -108,7 +108,7 @@ namespace broomie {
     }
 
     int createRandomInt(int max) {
-      int rv = static_cast<double>(std::rand() % max);
+      int rv = static_cast<int>(std::rand() % max);
       return rv;
     }
 

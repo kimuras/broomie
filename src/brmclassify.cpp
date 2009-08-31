@@ -218,7 +218,7 @@ namespace broomie {
         unsigned int featuresSiz = features.size();
         if(featuresSiz < 1) continue;
         double docSiz = ( featuresSiz - 1) / 2;
-        broomie::Document *doc = new broomie::Document(docSiz);
+        broomie::Document *doc = new broomie::Document(static_cast<int>(docSiz));
         std::string feature("");
         for(unsigned int i = 0; i < featuresSiz - 1; i++){
           if(i % 2 == 0){

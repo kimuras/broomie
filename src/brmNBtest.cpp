@@ -116,11 +116,11 @@ namespace broomie {
   {
     std::string basePath = TEST_DIR_PATH;
     std::map<int, int> featureBuf;
-    int trainNum = broomie::testutil::createRandomVal<double>(100);
+    int trainNum = broomie::testutil::createRandomVal<int>(100);
     for(int i = 0; i < trainNum; i++){
       broomie::NB::FeatureVal fv;
       double sumValBuf = 0.0;
-      int featureNum = broomie::testutil::createRandomVal<double>(100);
+      int featureNum = broomie::testutil::createRandomVal<int>(100);
       for(int j = 0; j <featureNum; j++){
         double val = broomie::testutil::createRandomVal<double>(10);
         fv.push_back(std::make_pair(j, val));

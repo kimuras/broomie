@@ -141,7 +141,7 @@ namespace broomie {
         @param numTrain :
         @return return true if success, return false if fail.
      */
-      void smoothing(double& val, int sumFeatureVal);
+      void smoothing(double& val, double sumFeatureVal);
     };
   }
 }
