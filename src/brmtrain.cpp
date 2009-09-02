@@ -1,7 +1,5 @@
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
-#include <iterator>
-#include <cstdlib>
 
 const std::string CONFIG_NAME  = "broomie.conf";
 const std::string METHOD_BAYES = "bayes";
@@ -44,9 +42,7 @@ namespace broomie {
       ofs.write(DEFINE_BASE_DIR_NAME.c_str(),
                 std::strlen(DEFINE_BASE_DIR_NAME.c_str()));
       ofs.write("\t", 1);
-      char* realBasePath = realpath(basePath.c_str(), NULL);
-      ofs.write(realBasePath, std::strlen(realBasePath));
-      std::free(realBasePath);
+      ofs.write(".", std::strlen("."));
       ofs.write("\n", 1);
       ofs.close();
       std::map<std::string, int> classNamesMap;
