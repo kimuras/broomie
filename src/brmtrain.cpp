@@ -12,7 +12,6 @@ namespace broomie {
       EASY    = 2,
     };
 
-
     bool createTrain(std::string basePath, std::string trainPath,
                      CList& classNames, int classifierMethod)
     {

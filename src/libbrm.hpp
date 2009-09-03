@@ -116,16 +116,19 @@ namespace broomie {
     ~Document(){};
 
     /*!
-      @brief This method is used in order to add new feature(piar of a word and a point) to the Document object.
+      @brief This method is used in order to add
+      new feature(piar of a word and a point) to the Document object.
       @param word : String object of feature name.
       @param point : The point of the feature.
-      @attention If success sotre the feature, increment the featureNum of Document object.
+      @attention If success sotre the feature, increment
+      the featureNum of Document object.
     */
     void addFeature(const std::string word, double point);
 
 
     /*!
-      @brief This method is used in order to get i-th Feature object(pair of a word and a point).
+      @brief This method is used in order to get
+      i-th Feature object(pair of a word and a point).
       of an element in a Document object.
       @param index : Specifies the index of the element.
       @param point : Pointer to the point.
@@ -180,9 +183,11 @@ namespace broomie {
       @param features[] : Array of Feature objects.
       including feature name and point of it.
       @param num : Num of features.
-      @param mode : Set the features `broomie::POSTIVE' sample or `broomie::NEGATIVE' sample.
+      @param mode : Set the features `broomie::POSTIVE' sample or
+      `broomie::NEGATIVE' sample.
       @return Return `true' if success, return `false' if fail.
-      @attention Mode must be use enum object of broomie::POSITIVE or broomie::NEGATIVE.
+      @attention Mode must be use enum object of broomie::POSITIVE or
+      broomie::NEGATIVE.
      */
     virtual bool put(const Feature features[], int num, int mode) = 0;
 
@@ -212,7 +217,8 @@ namespace broomie {
 
   private:
     /*!
-      @brief This method is used in order to get num of traing data in learning model.
+      @brief This method is used in order to get num of traing data
+      in learning model.
       @return Num of training data.
      */
     virtual int getTrainingNum() = 0;
@@ -232,10 +238,11 @@ namespace broomie {
 
 
     /*!
-     * @brief This method is used in order to create Model object.
-     * @return Pointer to created Model object.
-     * @attention Because the region of the return value is allocated with `new',
-     * it should be released with the `delete' when it is no longer in use.
+      @brief This method is used in order to create Model object.
+      @return Pointer to created Model object.
+      @attention Because the region of the return value is
+      allocated with `new',
+      it should be released with the `delete' when it is no longer in use.
      */
     virtual Model* create(int classifierMethod) = 0;
   };
@@ -358,7 +365,8 @@ namespace broomie {
 
 
     /*!
-      @brief Trace the error messages of a Classifier object if problem is occured.
+      @brief Trace the error messages of a Classifier object
+      if problem is occured.
       @return Error Messages it is occured in process of a Classifier object.
      */
     const std::string traceErr();
@@ -367,7 +375,7 @@ namespace broomie {
     /*!
       @brief Begin making learning model process.
       @param classNames : Vecotr objcet including Name of classes.
-      @param classifierMethod : Classifier algotirhm (broomie::OLL or broomie::SVM)
+      @param classifierMethod : Classifier algotirhm
       @return Return `true' if success, return `false' if fail.
      */
     bool beginMakingModel(const CList& classNames, const int classifierMethod);
@@ -415,7 +423,7 @@ namespace broomie {
 
     /*!
       @brief Begin classification mode.
-      @param classifierMethod : Classifier method(broomie::OLL or broomie::SVM)
+      @param classifierMethod : Classifier method(OLL, SVM)
       @return Return `true' if success, return `false' if fail.
     */
     bool beginClassification(int classifierMethod);
@@ -456,7 +464,8 @@ namespace broomie {
     /*! @brief Pointer of tokyocabinet hash database for word dictionary */
     TCHDB *wordDic;
 
-    /*! @brief Pointer of tokyocabinet hash database for inverse word dictionary */
+    /*! @brief Pointer of tokyocabinet hash database
+      for inverse word dictionary */
     TCHDB *wordDicInverse;
 
     /*! @brief Max word id in word dictionary */
@@ -483,7 +492,7 @@ namespace broomie {
       @param otherMessage : Specifies the other message of the error.
      */
     void setErrMessage(int ecode, const char* fileName,
-                       int line, const char* function, const char* otherMessage);
+                      int line, const char* function, const char* otherMessage);
 
     void clearErrStack();
 
