@@ -67,9 +67,13 @@ if test "$enable_all" = "yes"; then
     BRM_USE_TINYSVM="-DUSE_TINYSVM"
     BRM_LIB_TINYSVM="-ltinysvm"
     AM_CONDITIONAL(ENABLE_FCGI, test "$enable_fcgi" = "no")
+    enable_fcgi="yes"
     AM_CONDITIONAL(ENABLE_OLL, test "$enable_oll" = "no")
+    enable_oll="no"
     AM_CONDITIONAL(ENABLE_TINYSVM, test "$enable_tinysvm" = "no")
+    enable_tinysvm="no"
     AM_CONDITIONAL(ENABLE_TEST, test "$enable_test" = "no")
+    enable_test="no"
 fi
 AM_CONDITIONAL(ENABLE_ALL, test "$enable_all" = "yes")
 
