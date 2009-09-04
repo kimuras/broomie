@@ -11,8 +11,6 @@
 #include <iterator>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <time.h> // may be not need
-#include <stdio.h>
 #include "libbrm.hpp"
 
 #ifdef HAVE_CONFIG_H

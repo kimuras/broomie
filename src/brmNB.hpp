@@ -6,7 +6,6 @@
  * BSD license. See the COPYING file for full text.
  */
 
-
 #include <vector>
 #include <utility>
 #include <cstring>

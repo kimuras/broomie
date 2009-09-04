@@ -1,8 +1,13 @@
+/*
+ * Copyright (C) 2009 Shunya Kimura <brmtrain@gmail.com>
+ * All Rights Reserved.
+ *
+ * Use and distribution of this program is licensed under the
+ * BSD license. See the COPYING file for full text.
+ */
+
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
-
-const std::string CONFIG_NAME  = "broomie.conf";
-const std::string METHOD_BAYES = "bayes";
 
 namespace broomie {
 
@@ -29,15 +34,23 @@ namespace broomie {
         delete modelFactory;
         return false;
       }
-      std::string confPath = basePath + CONFIG_NAME;
+      std::string confPath = basePath + broomie::CONFIG_NAME;
       std::ofstream ofs(confPath.c_str());
       ofs.write(DEFINE_METHOD_NAME.c_str(),
                 std::strlen(DEFINE_METHOD_NAME.c_str()));
       ofs.write("\t", 1);
+      std::string methodBuf;
       if(classifierMethod == broomie::BAYES){
-        ofs.write(METHOD_BAYES.c_str(), std::strlen(METHOD_BAYES.c_str()));
-        ofs.write("\n", 1);
+        methodBuf = broomie::METHOD_BAYES;
+      } else if(classifierMethod == broomie::OLL){
+        methodBuf = broomie::METHOD_OLL;
+      } else if(classifierMethod == broomie::TINYSVM){
+        methodBuf = broomie::METHOD_TINYSVM;
+      } else {
+        return false;
       }
+      ofs.write(methodBuf.c_str(), std::strlen(methodBuf.c_str()));
+      ofs.write("\n", 1);
       ofs.write(DEFINE_BASE_DIR_NAME.c_str(),
                 std::strlen(DEFINE_BASE_DIR_NAME.c_str()));
       ofs.write("\t", 1);
@@ -227,7 +240,7 @@ namespace broomie {
 
 int main(int argc, char **argv)
 {
-  std::string method = METHOD_BAYES;
+  std::string method = broomie::METHOD_BAYES;
   std::string basePath;
   std::string trainPath;
   broomie::CList classNames;
@@ -245,14 +258,23 @@ int main(int argc, char **argv)
     return false;
   }
 
-  if(method == METHOD_BAYES){ //algorithm
-    if(!broomie::train::createTrain(basePath, trainPath, classNames,
-                                    broomie::BAYES)) return false;
+  int classifierMethod = 0;
+  if(method == broomie::METHOD_BAYES){
+    classifierMethod = broomie::BAYES;
+#ifdef USE_OLL
+  } else if(method == broomie::METHOD_OLL){
+    classifierMethod = broomie::OLL;
+#endif
+#ifdef USE_TINYSVM
+  } else if(method == broomie::METHOD_TINYSVM){
+    classifierMethod = broomie::TINYSVM;
+#endif
   } else {
     std::cerr << "error: unknown classifier method [" <<
-      method << "] (`bayes' only)"
-              << std::endl;
+      method << "]" << std::endl;
     return false;
   }
+  if(!broomie::train::createTrain(basePath, trainPath,
+                                  classNames, classifierMethod)) return false;
   return true;
 }

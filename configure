@@ -841,8 +841,18 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+BRM_LIB_TINYSVM
+BRM_USE_TINYSVM
+BRM_LIB_OLL
+BRM_USE_OLL
+ENABLE_ALL_FALSE
+ENABLE_ALL_TRUE
 ENABLE_TEST_FALSE
 ENABLE_TEST_TRUE
+ENABLE_TINYSVM_FALSE
+ENABLE_TINYSVM_TRUE
+ENABLE_OLL_FALSE
+ENABLE_OLL_TRUE
 ENABLE_FCGI_FALSE
 ENABLE_FCGI_TRUE
 am__untar
@@ -909,7 +919,10 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_fcgi
+enable_oll
+enable_tinysvm
 enable_test
+enable_all
 enable_dependency_tracking
 enable_shared
 enable_static
@@ -1562,7 +1575,10 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-fcgi           build web interface with fastCGI
+  --enable-oll            use oll library
+  --enable-tinysvm        use tinysvm library
   --enable-test           build test tools. need gtest.
+  --enable-all            all the options are yes
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --enable-shared[=PKGS]  build shared libraries [default=yes]
@@ -2565,7 +2581,8 @@ am__tar='${AMTAR} chof - "$$tardir"'; am__untar='${AMTAR} xf -'
 
 
 
-# Options
+
+# FCGI option
 # Check whether --enable-fcgi was given.
 if test "${enable_fcgi+set}" = set; then
   enableval=$enable_fcgi; enable_fcgi="$enableval"
@@ -2583,6 +2600,57 @@ else
 fi
 
 
+# oll option
+# Check whether --enable-oll was given.
+if test "${enable_oll+set}" = set; then
+  enableval=$enable_oll; enable_oll="$enableval"
+else
+  enable_oll="no"
+
+fi
+
+if test "$enable_oll" = "yes"; then
+    BRM_USE_OLL="-DUSE_OLL"
+    BRM_LIB_OLL="-loll"
+else
+    BRM_USE_OLL=""
+    BRM_LIB_OLL=""
+fi
+ if test "$enable_oll" = "yes"; then
+  ENABLE_OLL_TRUE=
+  ENABLE_OLL_FALSE='#'
+else
+  ENABLE_OLL_TRUE='#'
+  ENABLE_OLL_FALSE=
+fi
+
+
+# tinysvm option
+# Check whether --enable-tinysvm was given.
+if test "${enable_tinysvm+set}" = set; then
+  enableval=$enable_tinysvm; enable_tinysvm="$enableval"
+else
+  enable_tinysvm="no"
+
+fi
+
+if test "$enable_tinysvm" = "yes"; then
+    BRM_USE_TINYSVM="-DUSE_TINYSVM"
+    BRM_LIB_TINYSVM="-ltinysvm"
+else
+    BRM_USE_TINYSVM=""
+    BRM_LIB_TINYSVM=""
+fi
+ if test "$enable_tinysvm" = "yes"; then
+  ENABLE_TINYSVM_TRUE=
+  ENABLE_TINYSVM_FALSE='#'
+else
+  ENABLE_TINYSVM_TRUE='#'
+  ENABLE_TINYSVM_FALSE=
+fi
+
+
+# test option
 # Check whether --enable-test was given.
 if test "${enable_test+set}" = set; then
   enableval=$enable_test; enable_test="$enableval"
@@ -2598,6 +2666,66 @@ else
   ENABLE_TEST_TRUE='#'
   ENABLE_TEST_FALSE=
 fi
+
+
+# all option
+# Check whether --enable-all was given.
+if test "${enable_all+set}" = set; then
+  enableval=$enable_all; enable_all="$enableval"
+else
+  enable_all="no"
+
+fi
+
+if test "$enable_all" = "yes"; then
+    BRM_USE_OLL="-DUSE_OLL"
+    BRM_LIB_OLL="-loll"
+    BRM_USE_TINYSVM="-DUSE_TINYSVM"
+    BRM_LIB_TINYSVM="-ltinysvm"
+     if test "$enable_fcgi" = "no"; then
+  ENABLE_FCGI_TRUE=
+  ENABLE_FCGI_FALSE='#'
+else
+  ENABLE_FCGI_TRUE='#'
+  ENABLE_FCGI_FALSE=
+fi
+
+     if test "$enable_oll" = "no"; then
+  ENABLE_OLL_TRUE=
+  ENABLE_OLL_FALSE='#'
+else
+  ENABLE_OLL_TRUE='#'
+  ENABLE_OLL_FALSE=
+fi
+
+     if test "$enable_tinysvm" = "no"; then
+  ENABLE_TINYSVM_TRUE=
+  ENABLE_TINYSVM_FALSE='#'
+else
+  ENABLE_TINYSVM_TRUE='#'
+  ENABLE_TINYSVM_FALSE=
+fi
+
+     if test "$enable_test" = "no"; then
+  ENABLE_TEST_TRUE=
+  ENABLE_TEST_FALSE='#'
+else
+  ENABLE_TEST_TRUE='#'
+  ENABLE_TEST_FALSE=
+fi
+
+fi
+ if test "$enable_all" = "yes"; then
+  ENABLE_ALL_TRUE=
+  ENABLE_ALL_FALSE='#'
+else
+  ENABLE_ALL_TRUE='#'
+  ENABLE_ALL_FALSE=
+fi
+
+
+
+
 
 
 
@@ -5305,13 +5433,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:5308: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:5436: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5311: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:5439: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5314: output\"" >&5)
+  (eval echo "\"\$as_me:5442: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -6506,7 +6634,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6509 "configure"' > conftest.$ac_ext
+  echo '#line 6637 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8861,11 +8989,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8864: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8992: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8868: \$? = $ac_status" >&5
+   echo "$as_me:8996: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9200,11 +9328,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9203: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9331: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9207: \$? = $ac_status" >&5
+   echo "$as_me:9335: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9305,11 +9433,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9308: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9436: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9312: \$? = $ac_status" >&5
+   echo "$as_me:9440: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9360,11 +9488,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9363: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9491: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9367: \$? = $ac_status" >&5
+   echo "$as_me:9495: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12163,7 +12291,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12166 "configure"
+#line 12294 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12259,7 +12387,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12262 "configure"
+#line 12390 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14279,11 +14407,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14282: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14410: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14286: \$? = $ac_status" >&5
+   echo "$as_me:14414: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14378,11 +14506,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14381: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14509: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14385: \$? = $ac_status" >&5
+   echo "$as_me:14513: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14430,11 +14558,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14433: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14561: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14437: \$? = $ac_status" >&5
+   echo "$as_me:14565: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15495,7 +15623,6 @@ fi
 
 # Checks for header files.
 
-
 if test "${ac_cv_header_tcutil_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for tcutil.h" >&5
 $as_echo_n "checking for tcutil.h... " >&6; }
@@ -15780,81 +15907,6 @@ fi
 
 
 if  test $enable_fcgi = "yes" ; then
-
-{ $as_echo "$as_me:$LINENO: checking for FCGI_Accept in -lfcgi" >&5
-$as_echo_n "checking for FCGI_Accept in -lfcgi... " >&6; }
-if test "${ac_cv_lib_fcgi_FCGI_Accept+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lfcgi  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char FCGI_Accept ();
-int
-main ()
-{
-return FCGI_Accept ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_fcgi_FCGI_Accept=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_fcgi_FCGI_Accept=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_fcgi_FCGI_Accept" >&5
-$as_echo "$ac_cv_lib_fcgi_FCGI_Accept" >&6; }
-if test "x$ac_cv_lib_fcgi_FCGI_Accept" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBFCGI 1
-_ACEOF
-
-  LIBS="-lfcgi $LIBS"
-
-fi
-
    if test "${ac_cv_header_fcgi_stdio_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for fcgi_stdio.h" >&5
 $as_echo_n "checking for fcgi_stdio.h... " >&6; }
@@ -15999,75 +16051,6 @@ fi
 fi
 
 if  test $enable_test = "yes" ; then
-
-{ $as_echo "$as_me:$LINENO: checking for main in -lgtest" >&5
-$as_echo_n "checking for main in -lgtest... " >&6; }
-if test "${ac_cv_lib_gtest_main+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lgtest  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_gtest_main=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_gtest_main=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_gtest_main" >&5
-$as_echo "$ac_cv_lib_gtest_main" >&6; }
-if test "x$ac_cv_lib_gtest_main" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGTEST 1
-_ACEOF
-
-  LIBS="-lgtest $LIBS"
-
-fi
-
    if test "${ac_cv_header_gtest_gtest_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for gtest/gtest.h" >&5
 $as_echo_n "checking for gtest/gtest.h... " >&6; }
@@ -16205,6 +16188,999 @@ if test "x$ac_cv_header_gtest_gtest_h" = x""yes; then
 else
   { { $as_echo "$as_me:$LINENO: error: gtest/gtest.h is required" >&5
 $as_echo "$as_me: error: gtest/gtest.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+fi
+
+if  test $enable_oll = "yes" ; then
+   if test "${ac_cv_header_oll_oll_hpp+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for oll/oll.hpp" >&5
+$as_echo_n "checking for oll/oll.hpp... " >&6; }
+if test "${ac_cv_header_oll_oll_hpp+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_oll_oll_hpp" >&5
+$as_echo "$ac_cv_header_oll_oll_hpp" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking oll/oll.hpp usability" >&5
+$as_echo_n "checking oll/oll.hpp usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <oll/oll.hpp>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking oll/oll.hpp presence" >&5
+$as_echo_n "checking oll/oll.hpp presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <oll/oll.hpp>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: oll/oll.hpp: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: oll/oll.hpp: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for oll/oll.hpp" >&5
+$as_echo_n "checking for oll/oll.hpp... " >&6; }
+if test "${ac_cv_header_oll_oll_hpp+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_oll_oll_hpp=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_oll_oll_hpp" >&5
+$as_echo "$ac_cv_header_oll_oll_hpp" >&6; }
+
+fi
+if test "x$ac_cv_header_oll_oll_hpp" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: oll/oll.hpp is required" >&5
+$as_echo "$as_me: error: oll/oll.hpp is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+fi
+
+if  test $enable_tinysvm = "yes" ; then
+   if test "${ac_cv_header_tinysvm_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for tinysvm.h" >&5
+$as_echo_n "checking for tinysvm.h... " >&6; }
+if test "${ac_cv_header_tinysvm_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_tinysvm_h" >&5
+$as_echo "$ac_cv_header_tinysvm_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking tinysvm.h usability" >&5
+$as_echo_n "checking tinysvm.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <tinysvm.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking tinysvm.h presence" >&5
+$as_echo_n "checking tinysvm.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tinysvm.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: tinysvm.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: tinysvm.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: tinysvm.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: tinysvm.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for tinysvm.h" >&5
+$as_echo_n "checking for tinysvm.h... " >&6; }
+if test "${ac_cv_header_tinysvm_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_tinysvm_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_tinysvm_h" >&5
+$as_echo "$ac_cv_header_tinysvm_h" >&6; }
+
+fi
+if test "x$ac_cv_header_tinysvm_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: tinysvm.h is required" >&5
+$as_echo "$as_me: error: tinysvm.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+   if test "${ac_cv_header_TinySVM_misc_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for TinySVM/misc.h" >&5
+$as_echo_n "checking for TinySVM/misc.h... " >&6; }
+if test "${ac_cv_header_TinySVM_misc_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_misc_h" >&5
+$as_echo "$ac_cv_header_TinySVM_misc_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/misc.h usability" >&5
+$as_echo_n "checking TinySVM/misc.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <TinySVM/misc.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/misc.h presence" >&5
+$as_echo_n "checking TinySVM/misc.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <TinySVM/misc.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/misc.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: TinySVM/misc.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for TinySVM/misc.h" >&5
+$as_echo_n "checking for TinySVM/misc.h... " >&6; }
+if test "${ac_cv_header_TinySVM_misc_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_TinySVM_misc_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_misc_h" >&5
+$as_echo "$ac_cv_header_TinySVM_misc_h" >&6; }
+
+fi
+if test "x$ac_cv_header_TinySVM_misc_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: TinySVM/misc.h is required" >&5
+$as_echo "$as_me: error: TinySVM/misc.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+   if test "${ac_cv_header_TinySVM_model_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for TinySVM/model.h" >&5
+$as_echo_n "checking for TinySVM/model.h... " >&6; }
+if test "${ac_cv_header_TinySVM_model_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_model_h" >&5
+$as_echo "$ac_cv_header_TinySVM_model_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/model.h usability" >&5
+$as_echo_n "checking TinySVM/model.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <TinySVM/model.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/model.h presence" >&5
+$as_echo_n "checking TinySVM/model.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <TinySVM/model.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/model.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: TinySVM/model.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for TinySVM/model.h" >&5
+$as_echo_n "checking for TinySVM/model.h... " >&6; }
+if test "${ac_cv_header_TinySVM_model_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_TinySVM_model_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_model_h" >&5
+$as_echo "$ac_cv_header_TinySVM_model_h" >&6; }
+
+fi
+if test "x$ac_cv_header_TinySVM_model_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: TinySVM/model.h is required" >&5
+$as_echo "$as_me: error: TinySVM/model.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+   if test "${ac_cv_header_TinySVM_example_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for TinySVM/example.h" >&5
+$as_echo_n "checking for TinySVM/example.h... " >&6; }
+if test "${ac_cv_header_TinySVM_example_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_example_h" >&5
+$as_echo "$ac_cv_header_TinySVM_example_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/example.h usability" >&5
+$as_echo_n "checking TinySVM/example.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <TinySVM/example.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/example.h presence" >&5
+$as_echo_n "checking TinySVM/example.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <TinySVM/example.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/example.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: TinySVM/example.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for TinySVM/example.h" >&5
+$as_echo_n "checking for TinySVM/example.h... " >&6; }
+if test "${ac_cv_header_TinySVM_example_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_TinySVM_example_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_example_h" >&5
+$as_echo "$ac_cv_header_TinySVM_example_h" >&6; }
+
+fi
+if test "x$ac_cv_header_TinySVM_example_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: TinySVM/example.h is required" >&5
+$as_echo "$as_me: error: TinySVM/example.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+   if test "${ac_cv_header_TinySVM_base_example_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for TinySVM/base_example.h" >&5
+$as_echo_n "checking for TinySVM/base_example.h... " >&6; }
+if test "${ac_cv_header_TinySVM_base_example_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_base_example_h" >&5
+$as_echo "$ac_cv_header_TinySVM_base_example_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/base_example.h usability" >&5
+$as_echo_n "checking TinySVM/base_example.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <TinySVM/base_example.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/base_example.h presence" >&5
+$as_echo_n "checking TinySVM/base_example.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <TinySVM/base_example.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/base_example.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: TinySVM/base_example.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for TinySVM/base_example.h" >&5
+$as_echo_n "checking for TinySVM/base_example.h... " >&6; }
+if test "${ac_cv_header_TinySVM_base_example_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_TinySVM_base_example_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_base_example_h" >&5
+$as_echo "$ac_cv_header_TinySVM_base_example_h" >&6; }
+
+fi
+if test "x$ac_cv_header_TinySVM_base_example_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: TinySVM/base_example.h is required" >&5
+$as_echo "$as_me: error: TinySVM/base_example.h is required" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+   if test "${ac_cv_header_TinySVM_param_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for TinySVM/param.h" >&5
+$as_echo_n "checking for TinySVM/param.h... " >&6; }
+if test "${ac_cv_header_TinySVM_param_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_param_h" >&5
+$as_echo "$ac_cv_header_TinySVM_param_h" >&6; }
+else
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/param.h usability" >&5
+$as_echo_n "checking TinySVM/param.h usability... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <TinySVM/param.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking TinySVM/param.h presence" >&5
+$as_echo_n "checking TinySVM/param.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <TinySVM/param.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: TinySVM/param.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: TinySVM/param.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ---------------------------------- ##
+## Report this to bramtrain@gmail.com ##
+## ---------------------------------- ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for TinySVM/param.h" >&5
+$as_echo_n "checking for TinySVM/param.h... " >&6; }
+if test "${ac_cv_header_TinySVM_param_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_TinySVM_param_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_TinySVM_param_h" >&5
+$as_echo "$ac_cv_header_TinySVM_param_h" >&6; }
+
+fi
+if test "x$ac_cv_header_TinySVM_param_h" = x""yes; then
+  true
+else
+  { { $as_echo "$as_me:$LINENO: error: TinySVM/param.h is required" >&5
+$as_echo "$as_me: error: TinySVM/param.h is required" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -17963,114 +18939,7 @@ fi
 
 
 
-# Checks for library functions.
-
-
-
-
-
-
-for ac_func in mkdir rmdir strchr strrchr strstr
-do
-as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-{ $as_echo "$as_me:$LINENO: checking for $ac_func" >&5
-$as_echo_n "checking for $ac_func... " >&6; }
-if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then
-  $as_echo_n "(cached) " >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-/* Define $ac_func to an innocuous variant, in case <limits.h> declares $ac_func.
-   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
-#define $ac_func innocuous_$ac_func
-
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char $ac_func (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  */
-
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-
-#undef $ac_func
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char $ac_func ();
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined __stub_$ac_func || defined __stub___$ac_func
-choke me
-#endif
-
-int
-main ()
-{
-return $ac_func ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  eval "$as_ac_var=yes"
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	eval "$as_ac_var=no"
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-fi
-ac_res=`eval 'as_val=${'$as_ac_var'}
-		 $as_echo "$as_val"'`
-	       { $as_echo "$as_me:$LINENO: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-as_val=`eval 'as_val=${'$as_ac_var'}
-		 $as_echo "$as_val"'`
-   if test "x$as_val" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
-
-
+# AC_CONFIG_FILES
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
 
 cat >confcache <<\_ACEOF
@@ -18185,10 +19054,59 @@ $as_echo "$as_me: error: conditional \"ENABLE_FCGI\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${ENABLE_OLL_TRUE}" && test -z "${ENABLE_OLL_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_OLL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_OLL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_TINYSVM_TRUE}" && test -z "${ENABLE_TINYSVM_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_TINYSVM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_TINYSVM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${ENABLE_TEST_TRUE}" && test -z "${ENABLE_TEST_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_TEST\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"ENABLE_TEST\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_FCGI_TRUE}" && test -z "${ENABLE_FCGI_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_FCGI\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_FCGI\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_OLL_TRUE}" && test -z "${ENABLE_OLL_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_OLL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_OLL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_TINYSVM_TRUE}" && test -z "${ENABLE_TINYSVM_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_TINYSVM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_TINYSVM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_TEST_TRUE}" && test -z "${ENABLE_TEST_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_TEST\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_TEST\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_ALL_TRUE}" && test -z "${ENABLE_ALL_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ENABLE_ALL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ENABLE_ALL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi

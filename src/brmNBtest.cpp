@@ -31,15 +31,13 @@
 #include "brmNB.hpp"
 #include "brmutil.hpp"
 
-const std::string TEST_DIR_PATH        = "/tmp/broomie_test/";
-const unsigned int TEST_NUM            = 100;
-
-unsigned int numPosTrainBuf = 0;
-unsigned int numNegTrainBuf = 0;
-double sumPosValBuf = 0.0;
-double sumNegValBuf = 0.0;
-int uniqValBuf = 0;
-
+const std::string TEST_DIR_PATH = "/tmp/broomie_test/";
+const unsigned int TEST_NUM     = 100;
+unsigned int numPosTrainBuf     = 0;
+unsigned int numNegTrainBuf     = 0;
+double sumPosValBuf             = 0.0;
+double sumNegValBuf             = 0.0;
+int uniqValBuf                  = 0;
 
 namespace broomie {
 
@@ -59,7 +57,8 @@ namespace broomie {
     bool err = true;
     TCLIST* files = tcreaddir(TEST_DIR_PATH.c_str());
     for(int i = 0; i < tclistnum(files); i++){
-      char* filepath = tcsprintf("%s/%s",TEST_DIR_PATH.c_str(), tclistval2(files, i));
+      char* filepath = tcsprintf("%s/%s",TEST_DIR_PATH.c_str(),
+                                 tclistval2(files, i));
       remove(filepath);
       free(filepath);
     }
@@ -160,10 +159,7 @@ namespace broomie {
     testFINISH();
   }
 
-
 }
-
-
 
 int main(int argc, char** argv)
 {

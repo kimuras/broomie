@@ -6,15 +6,12 @@
  * BSD license. See the COPYING file for full text.
  */
 
-#include <math.h>
-#include <iterator>
-
 #include "brmalgorithm.hpp"
 #include "brmutil.hpp"
+#include <math.h>
+#include <iterator>
 #include <fcgi_stdio.h>
 
-const std::string INTERFACE_CONFIG_NAME = "./broomie.conf";
-const std::string METHOD_BAYES = "bayes";
 
 class CGIManager {
 
@@ -47,8 +44,16 @@ public:
     while(std::getline(ifs, line)){
       std::vector<std::string> features = broomie::util::split(line, "\t");
       if(features[0] == broomie::DEFINE_METHOD_NAME){
-        if(features[1] == METHOD_BAYES){ // algorithm
+        if(features[1] == broomie::METHOD_BAYES){
           method = broomie::BAYES;
+#ifdef USE_OLL
+        } else if(features[1] == broomie::METHOD_OLL){
+          method = broomie::OLL;
+#endif
+#ifdef USE_TINYSVM
+        } else if(features[1] == broomie::METHOD_TINYSVM){
+          method = broomie::TINYSVM;
+#endif
         } else {
           return false;
         }
@@ -92,7 +97,7 @@ public:
     TCMAP* params = tcmapnew2(MINIBNUM);
     readparameters(params);
     std::string text = tcmapget2(params, "text");
-    std::vector<std::string>features = broomie::util::split(text, "\t"); // tcsplit
+    std::vector<std::string>features = broomie::util::split(text, "\t");
     broomie::Document doc(features.size() / 2);
     std::string className;
     std::string feature;
@@ -124,7 +129,7 @@ public:
        (rp = getenv("CONTENT_LENGTH")) != NULL && (len = atoi(rp)) > 0){
       if(len > UPLOADMAX) len = UPLOADMAX;
       buf = static_cast<char*>(tccalloc(len + 1, 1));
-            if(static_cast<int>(fread(buf, 1, len, stdin)) != len){
+      if(static_cast<int>(fread(buf, 1, len, stdin)) != len){
         tcfree(buf);
         buf = NULL;
       }
@@ -133,8 +138,9 @@ public:
       len = strlen(buf);
     }
     if(buf && len > 0){
-      if((rp = getenv("CONTENT_TYPE")) != NULL && tcstrfwm(rp, "multipart/form-data") &&
-         (rp = strstr(rp, "boundary=")) != NULL){
+      if((rp = getenv("CONTENT_TYPE")) != NULL
+         && tcstrfwm(rp, "multipart/form-data")
+         && (rp = strstr(rp, "boundary=")) != NULL){
         rp += 9;
         if(*rp == '"') rp++;
         char bstr[strlen(rp)+1];
@@ -147,19 +153,22 @@ public:
         int pnum      = tclistnum(parts);
         for(int i = 0; i < pnum; i++){
           int psiz;
-          const char* part = static_cast<const char*>(tclistval(parts, i, &psiz));
+          const char* part =
+            static_cast<const char*>(tclistval(parts, i, &psiz));
           TCMAP* hmap = tcmapnew2(MINIBNUM);
           int bsiz;
           char* body = tcmimebreak(part, psiz, hmap, &bsiz);
           int nsiz;
-          const char* name = static_cast<const char*>(tcmapget(hmap, "NAME", 4, &nsiz));
+          const char* name =
+            static_cast<const char*>(tcmapget(hmap, "NAME", 4, &nsiz));
           if(name){
             tcmapput(params, name, nsiz, body, bsiz);
             const char* fname = tcmapget2(hmap, "FILENAME");
             if(fname){
               if(*fname == '/'){
                 fname = strrchr(fname, '/') + 1;
-              } else if(((*fname >= 'a' && *fname <= 'z') || (*fname >= 'A' && *fname <= 'Z')) &&
+              } else if(((*fname >= 'a' && *fname <= 'z') ||
+                         (*fname >= 'A' && *fname <= 'Z')) &&
                         fname[1] == ':' && fname[2] == '\\'){
                 fname = strrchr(fname, '\\') + 1;
               }
@@ -202,7 +211,9 @@ int main(int argc, char** argv)
 {
   bool ok = true;
   unsigned int cnt = 0;
-  CGIManager cgiMgr(INTERFACE_CONFIG_NAME);
+  std::string configName = "./";
+  configName.append(broomie::CONFIG_NAME);
+  CGIManager cgiMgr(configName);
   cgiMgr.readConfig();
   ok = cgiMgr.openClassifier();
   while(cgiMgr.accept() >= 0){

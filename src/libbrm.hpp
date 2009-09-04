@@ -36,10 +36,15 @@ namespace broomie {
   /* constant variables */
   const std::string DEFINE_BASE_DIR_NAME     = "DB_PATH";
   const std::string DEFINE_METHOD_NAME       = "METHOD";
+  const std::string METHOD_BAYES             = "bayes";
+  const std::string METHOD_OLL               = "oll";
+  const std::string METHOD_TINYSVM           = "svm";
   const std::string KEY_DIC_MAX_NUM          = "wordDicMaxNum";
   const std::string WORD_DIC_DB_NAME         = "wordDic.hdb";
   const std::string WORD_DIC_INVERSE_DB_NAME = "wordDicInverse.hdb";
   const std::string CLASS_LIST_DB_NAME       = "classList.hdb";
+  const std::string CONFIG_NAME              = "broomie.conf";
+
 
   /*!
     @brief Region for saving each classify result.

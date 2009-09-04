@@ -166,7 +166,8 @@ namespace broomie {
     classSettingNum = classNames.size();
     if(classSettingNum < 2){
       setErrMessage(broomie::BROOMIEELOADCLASSLIST,
-                    __FILE__, __LINE__, __func__, "class type need 2 types or more.");
+                    __FILE__, __LINE__, __func__,
+                    "class type need 2 types or more.");
       return false;
     }
     if(!openWordDic(broomie::CREATE)) return false;
@@ -175,7 +176,8 @@ namespace broomie {
     for(int i = 0; i < classSettingNum; i++){
       Model* model = modelFactory->create(classifierMethod);
       if(!model){
-        setErrMessage(broomie::BROOMIEECREATEMODEL, __FILE__, __LINE__, __func__, "");
+        setErrMessage(broomie::BROOMIEECREATEMODEL,
+                      __FILE__, __LINE__, __func__, "");
         classSettings[i].model = NULL;
         delete model;
         return false;
@@ -185,7 +187,8 @@ namespace broomie {
       classSettings[i].model = model;
       classListBuf.insert(std::pair<std::string, int>(classNames[i], 1));
       if(!tchdbput2(classList, classNames[i].c_str(), "1")){
-        setErrMessage(broomie::BROOMIEEPUTCLASSNAME, __FILE__, __LINE__, __func__, "");
+        setErrMessage(broomie::BROOMIEEPUTCLASSNAME,
+                      __FILE__, __LINE__, __func__, "");
         return false;
       }
     }
@@ -200,7 +203,8 @@ namespace broomie {
       for(int i = 0; i < classSettingNum; i++){
         if(classSettings[i].name.size() > 0){
           if(!classSettings[i].model->save()){
-            setErrMessage(broomie::BROOMIEESAVEMODEL, __FILE__, __LINE__, __func__, "");
+            setErrMessage(broomie::BROOMIEESAVEMODEL,
+                          __FILE__, __LINE__, __func__, "");
             ok = false;
           }
           delete classSettings[i].model;
@@ -229,7 +233,8 @@ namespace broomie {
     return ok;
   }
 
-  bool Classifier::addTrainingData(const std::string& className, const Document& doc)
+  bool Classifier::addTrainingData(const std::string& className,
+                                   const Document& doc)
   {
     bool ok = true;
     clearErrStack();
@@ -318,7 +323,8 @@ namespace broomie {
     classSettingNum = tchdbrnum(classList);
     if(classSettingNum < 2){
       setErrMessage(broomie::BROOMIEELOADCLASSLIST,
-                    __FILE__, __LINE__, __func__, "class type need 2 types or more.");
+                    __FILE__, __LINE__, __func__,
+                    "class type need 2 types or more.");
       ok = false;
       return false;
     }
@@ -329,12 +335,14 @@ namespace broomie {
     while((name = tchdbiternext2(classList)) != 0){
       Model* model = modelFactory->create(classifierMethod);
       if(!model){
-        setErrMessage(broomie::BROOMIEECREATEMODEL, __FILE__, __LINE__, __func__, "");
+        setErrMessage(broomie::BROOMIEECREATEMODEL,
+                      __FILE__, __LINE__, __func__, "");
         return false;
       }
       model->setPath(basePath + name + ".model");
       if(!model->load()){
-        setErrMessage(broomie::BROOMIEELOADMODEL, __FILE__, __LINE__, __func__, "");
+        setErrMessage(broomie::BROOMIEELOADMODEL,
+                      __FILE__, __LINE__, __func__, "");
         return false;
       }
       classSettings[i].name = name;

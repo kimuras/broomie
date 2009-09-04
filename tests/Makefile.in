@@ -33,6 +33,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@ENABLE_OLL_TRUE@am__append_1 = train_test_oll.sh classify_test_oll.sh
+@ENABLE_TINYSVM_TRUE@am__append_2 = train_test_svm.sh \
+@ENABLE_TINYSVM_TRUE@	classify_test_svm.sh
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -55,6 +58,10 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BRM_LIB_OLL = @BRM_LIB_OLL@
+BRM_LIB_TINYSVM = @BRM_LIB_TINYSVM@
+BRM_USE_OLL = @BRM_USE_OLL@
+BRM_USE_TINYSVM = @BRM_USE_TINYSVM@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -163,7 +170,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS = train_test.sh classify_test.sh
+TESTS = train_test_NB.sh classify_test_NB.sh $(am__append_1) \
+	$(am__append_2)
 EXTRA_DIST = $(TESTS) test_data
 all: all-am
 

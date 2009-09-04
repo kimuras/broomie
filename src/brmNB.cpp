@@ -13,7 +13,8 @@ namespace broomie {
 
   namespace NB {
 
-    NaiveBayes::NaiveBayes() : numPosTrain(0), numNegTrain(0), trainingCount(), sumPosVal(0.0), sumNegVal(0.0), uniqVal(0) {
+    NaiveBayes::NaiveBayes() : numPosTrain(0), numNegTrain(0), trainingCount(),
+                               sumPosVal(0.0), sumNegVal(0.0), uniqVal(0) {
       trainDB = tchdbnew();
     };
 
@@ -126,7 +127,8 @@ namespace broomie {
       } else {
         int sumValSiz = sizeof(sumPosVal);
         std::memcpy(&sumPosVal, sumValBuf, sumValSiz);
-        std::memcpy(&sumNegVal, static_cast<const char*>(sumValBuf) + sumValSiz, sumValSiz);
+        std::memcpy(&sumNegVal, static_cast<const char*>(sumValBuf)
+                    + sumValSiz, sumValSiz);
         std::free(sumValBuf);
       }
       uniqVal = tchdbrnum(trainDB) - 2;

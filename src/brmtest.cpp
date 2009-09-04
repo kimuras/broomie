@@ -38,13 +38,24 @@ const std::string TRAIN_PATH           = "../tests/test_data/train";
 const std::string TEST_PATH            = "../tests/test_data/test_labeled";
 const unsigned int ZERO                = 0;
 const unsigned int TEST_NUM            = 100;
-const unsigned int CLASSIFIER_TYPE_NUM = 1;   /* bayes only */
-
-// algorithm
-const std::string METHOD_BAYES         = "bayes";
+unsigned int CLASSIFIER_TYPE_NUM = 1;
 
 namespace broomie {
-  bool testINIT(){
+
+  void initTypeNum()
+  {
+#ifdef USE_OLL
+    CLASSIFIER_TYPE_NUM++;
+#endif
+
+#ifdef USE_TINYSVM
+    CLASSIFIER_TYPE_NUM++;
+#endif
+  }
+
+
+  bool testINIT()
+  {
     bool err = true;
     DIR *dir = opendir(TEST_DIR_PATH.c_str());
     if(dir == NULL){
@@ -52,15 +63,17 @@ namespace broomie {
         err = false;
       }
     }
-    //closedir(dir);
+    closedir(dir);
     return !err;
   }
 
-  bool testFINISH(){
+  bool testFINISH()
+  {
     bool err = true;
     TCLIST* files = tcreaddir(TEST_DIR_PATH.c_str());
     for(int i = 0; i < tclistnum(files); i++){
-      char* filepath = tcsprintf("%s/%s",TEST_DIR_PATH.c_str(), tclistval2(files, i));
+      char* filepath = tcsprintf("%s/%s",TEST_DIR_PATH.c_str(),
+                                 tclistval2(files, i));
       remove(filepath);
       free(filepath);
     }
@@ -76,7 +89,8 @@ namespace broomie {
     return err;
   }
 
-  broomie::Document *documentCreator(int seed){
+  broomie::Document *documentCreator(int seed)
+  {
     broomie::Document *doc = new broomie::Document(10);
     for(int i = 0; i < 10; i++){
       std::string feature = broomie::testutil::createRandomString(5);
@@ -102,15 +116,28 @@ namespace broomie {
       classNames.push_back("it");
       classNames.push_back("economic");
       classNames.push_back("sport");
-      int classifierMethod = broomie::testutil::createRandomVal<int>(CLASSIFIER_TYPE_NUM);
+      int classifierMethod =
+        broomie::testutil::createRandomVal<int>(CLASSIFIER_TYPE_NUM);
       cl->beginMakingModel(classNames, classifierMethod);
       std::string confPath = TEST_DIR_PATH + CONFIG_NAME;
       std::ofstream ofs(confPath.c_str());
       ofs.write(DEFINE_METHOD_NAME.c_str(), strlen(DEFINE_METHOD_NAME.c_str()));
       ofs.write("\t", 1);
-      if(classifierMethod == broomie::BAYES){    // algorithm
-        ofs.write(METHOD_BAYES.c_str(), strlen(METHOD_BAYES.c_str()));
+      if(classifierMethod == broomie::BAYES){
+        ofs.write(broomie::METHOD_BAYES.c_str(),
+                  strlen(broomie::METHOD_BAYES.c_str()));
+#ifdef USE_OLL
+      } else if(classifierMethod == broomie::OLL){
+        ofs.write(broomie::METHOD_OLL.c_str(),
+                  strlen(broomie::METHOD_OLL.c_str()));
+#endif
+#ifdef USE_TINYSVM
+      } else if(classifierMethod == broomie::TINYSVM){
+        ofs.write(broomie::METHOD_TINYSVM.c_str(),
+                  strlen(broomie::METHOD_TINYSVM.c_str()));
+#endif
       }
+
       ofs.close();
       delete modelFactory;
     }
@@ -146,10 +173,19 @@ namespace broomie {
         std::cout << features[0] << ":" << features[1] << std::endl;
         if(features[0] == DEFINE_METHOD_NAME){
           // algorithm
-          if(features[1] == METHOD_BAYES){
+          if(features[1] == broomie::METHOD_BAYES){
             classifierMethod = broomie::BAYES;
+#ifdef USE_OLL
+          } else if(features[1] == broomie::METHOD_OLL){
+            classifierMethod = broomie::OLL;
+#endif
+#ifdef USE_TINYSVM
+          } else if(features[1] == broomie::METHOD_TINYSVM){
+            classifierMethod = broomie::TINYSVM;
+#endif
           } else {
-            std::cerr << "chose classifier method error: " << features[1] <<  std::endl;
+            std::cerr << "chose classifier method error: "
+                      << features[1] <<  std::endl;
             return;
           }
         }
@@ -254,7 +290,8 @@ namespace broomie {
     std::cout << cnt << std::endl;
     std::cout << "collect num:";
     std::cout << collectNum << std::endl;
-    std::cout << "accuracy:" << (static_cast<float>(collectNum)/cnt*100) << std::endl;
+    std::cout << "accuracy:"
+              << (static_cast<float>(collectNum)/cnt*100) << std::endl;
     std::vector<std::string>* classList = cl->getClassList();
     std::cout << "=== err anal ===" << std::endl;
     for(unsigned int i = 0; i < classList->size(); i++){
@@ -274,15 +311,18 @@ namespace broomie {
    ****************************************************************************/
 
   /* Document object TEST */
-  TEST(broomie, Document_Document){
+  TEST(broomie, Document_Document)
+  {
     for(unsigned int i = 0; i < TEST_NUM; i++){
-      broomie::Document *doc = new broomie::Document(broomie::testutil::createRandomVal<int>(100));
+      broomie::Document *doc =
+        new broomie::Document(broomie::testutil::createRandomVal<int>(100));
       delete doc;
     }
   }
 
 
-  TEST(broomie, Document_addFeature){
+  TEST(broomie, Document_addFeature)
+  {
     broomie::Document *doc = new broomie::Document(TEST_NUM);
     int featureNum = 0;
     for(unsigned int i = 0; i < TEST_NUM; i++){
@@ -309,7 +349,8 @@ namespace broomie {
   }
 
 
-  TEST(broomie, Document_getFeature){
+  TEST(broomie, Document_getFeature)
+  {
     broomie::Document *doc = new broomie::Document(TEST_NUM);
     int featureNum = 0;
     for(unsigned int i = 0; i < TEST_NUM; i++){
@@ -382,7 +423,8 @@ namespace broomie {
   }
 
   /* ResultSet Object TEST */
-  TEST(broomie, ResultSet_ResultSet){
+  TEST(broomie, ResultSet_ResultSet)
+  {
     int resultNum = TEST_NUM;
     broomie::Result result[resultNum];
     for(int i = 0; i < resultNum; i++){
@@ -396,7 +438,8 @@ namespace broomie {
     delete rs;
   }
 
-  TEST(broomie, ResultSet_getResultSetNum){
+  TEST(broomie, ResultSet_getResultSetNum)
+  {
     for(unsigned int i = 0; i < TEST_NUM; i++){
       broomie::Result result[i];
       for(unsigned int j = 0; j < i; j++){
@@ -411,7 +454,8 @@ namespace broomie {
     }
   }
 
-  TEST(broomie, ResultSet_getResult){
+  TEST(broomie, ResultSet_getResult)
+  {
     int resultNum = TEST_NUM;
     broomie::Result result[resultNum];
     for(int i = 0; i < resultNum; i++){
@@ -443,7 +487,8 @@ namespace broomie {
 
 
   // Model Factory TEST
-  TEST(broomie, OllModelFactory){
+  TEST(broomie, OllModelFactory)
+  {
     for(unsigned int i = 0; i < TEST_NUM; i++){
       broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
       delete modelFactory;
@@ -451,7 +496,8 @@ namespace broomie {
   }
 
   /* Classifier object TEST */
-  TEST(broomie, Classifier_Classifier){
+  TEST(broomie, Classifier_Classifier)
+  {
     testINIT();
     std::string basePath = TEST_DIR_PATH;
     broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
@@ -474,7 +520,8 @@ namespace broomie {
   }
 
 
-  TEST(broomie, Classifier_beginMakingModel){
+  TEST(broomie, Classifier_beginMakingModel)
+  {
     std::string basePath = TEST_DIR_PATH;
     broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
     broomie::Classifier cl(modelFactory, basePath);
@@ -509,7 +556,8 @@ namespace broomie {
     delete modelFactory;
   }
 
-  TEST(broomie, Classifier_addTrainigData){
+  TEST(broomie, Classifier_addTrainigData)
+  {
     std::string basePath = TEST_DIR_PATH;
     broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
     broomie::Classifier cl(modelFactory, basePath);
@@ -531,7 +579,8 @@ namespace broomie {
       for(unsigned int j = 0; j < TEST_NUM; j++){
         broomie::Document *doc = documentCreator(j);
         ASSERT_TRUE(cl.addTrainingData(classNames[j%3], *doc));
-        ASSERT_FALSE(cl.addTrainingData(broomie::testutil::createRandomString(10), *doc));
+        ASSERT_FALSE(cl.addTrainingData(broomie::testutil::createRandomString(10),
+                                        *doc));
         ASSERT_FALSE(cl.addTrainingData("", *doc));
         delete doc;
       }
@@ -542,33 +591,9 @@ namespace broomie {
     delete modelFactory;
   }
 
-  /*
-    TEST(broomie, Classifier_endMakingModel){
-    testINIT();
-    std::string basePath = TEST_DIR_PATH;
-    broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
-    broomie::Classifier cl(modelFactory, basePath);
-    std::vector<std::string> classNames;
-    std::string className1 = broomie::testutil::createRandomString(10);
-    std::string className2 = broomie::testutil::createRandomString(10);
-    std::string className3 = broomie::testutil::createRandomString(10);
-    classNames.push_back(className1);
-    classNames.push_back(className2);
-    classNames.push_back(className3);
-    cl.beginMakingModel(classNames, broomie::OLL);
-    for(unsigned int i = 0; i < TEST_NUM; i++){
-      broomie::Document *doc = documentCreator(i);
-      cl.addTrainingData(classNames[i%3], *doc);
-      delete doc;
-    }
-    classNames.clear();
-    ASSERT_TRUE(cl.endMakingModel());
-    delete modelFactory;
-    testFINISH();
-  }
-  */
 
-  TEST(broomie, Classifier_endMakingModel){
+  TEST(broomie, Classifier_endMakingModel)
+  {
     testINIT();
     std::string basePath = TEST_DIR_PATH;
     broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
@@ -593,7 +618,8 @@ namespace broomie {
   }
 
 
-  TEST(broomie, Classifier_beginClassification){
+  TEST(broomie, Classifier_beginClassification)
+  {
     std::string basePath = TEST_DIR_PATH;
     broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
     std::vector<std::string> classNames;
@@ -634,6 +660,7 @@ namespace broomie {
 int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
+  void initTypeNum();
   bool ok = true;
   if(argc > 1){
     std::vector<std::string> arg(argc-1);

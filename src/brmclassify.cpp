@@ -6,12 +6,9 @@
  * BSD license. See the COPYING file for full text.
  */
 
-#include <iomanip>
+#include <iomanip>// not need
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
-
-const std::string CONFIG_NAME  = "broomie.conf";
-const std::string METHOD_BAYES = "bayes";
 
 namespace broomie {
 
@@ -159,7 +156,7 @@ namespace broomie {
       }
       broomie::ModelFactoryImpl *modelFactory = new broomie::ModelFactoryImpl();
       broomie::Classifier cl(modelFactory, basePath);
-      std::string confPath = basePath + CONFIG_NAME;
+      std::string confPath = basePath + broomie::CONFIG_NAME;
       std::ifstream confifs(confPath.c_str(), std::ios::in);
       if(!confifs){
         std::cerr << "file open error: " << confPath << std::endl;
@@ -170,9 +167,23 @@ namespace broomie {
       while(std::getline(confifs, line)){
         std::vector<std::string> features = broomie::util::split(line, "\t");
         if(features[0] == DEFINE_METHOD_NAME){
-          if(features[1] == METHOD_BAYES){ // algorithm
+          if(features[1] == broomie::METHOD_BAYES){
             classifierMethod = broomie::BAYES;
+#ifdef USE_OLL
+          } else if(features[1] == broomie::METHOD_OLL){
+            classifierMethod = broomie::OLL;
+#endif
+#ifdef USE_TINYSVM
+          } else if(features[1] == broomie::METHOD_TINYSVM){
+            classifierMethod = broomie::TINYSVM;
+#endif
           } else {
+#ifdef USE_TINYSVM
+            std::cout << "define" << std::endl;
+#else
+            std::cout << "not define" << std::endl;
+#endif
+            std::cout << features[1] << "\t" << broomie::METHOD_TINYSVM << std::endl;
             std::cerr << "chose classifier method error: "
                       << features[1] <<  std::endl;
             return false;
@@ -218,7 +229,8 @@ namespace broomie {
         unsigned int featuresSiz = features.size();
         if(featuresSiz < 1) continue;
         double docSiz = ( featuresSiz - 1) / 2;
-        broomie::Document *doc = new broomie::Document(static_cast<int>(docSiz));
+        broomie::Document *doc =
+          new broomie::Document(static_cast<int>(docSiz));
         std::string feature("");
         for(unsigned int i = 0; i < featuresSiz - 1; i++){
           if(i % 2 == 0){
@@ -261,6 +273,8 @@ namespace broomie {
               std::cout << "---------" << std::endl;
               std::cout << std::endl;
             }
+          } else {
+            if(maxPointClass == className) collectNum++;
           }
         } else if(clmode & CLASSIFY){
           std::cout << std::endl;
@@ -366,7 +380,7 @@ namespace broomie {
       } else {
         broomie::classify::printUsage(fileName);
       }
-      if(argc < 6){
+      if(argc < 4){
         broomie::classify::printUsage(fileName);
         return false;
       }
@@ -426,7 +440,8 @@ int main(int argc, char **argv)
   std::string testPath;
   int clmode = broomie::classify::ACCURACY;
   int pmode = 0;
-  if(!broomie::classify::procArgs(argc, argv, clmode, pmode, basePath, testPath))
+  if(!broomie::classify::procArgs(argc, argv, clmode, pmode,
+                                  basePath, testPath))
     return true;
 
   if(!broomie::util::checkDir(basePath)){
@@ -434,7 +449,8 @@ int main(int argc, char **argv)
     return false;
   }
   if(!broomie::util::checkFile(testPath)){
-    std::cerr << "error: [" << testPath << "] is not regular file." << std::endl;
+    std::cerr << "error: [" << testPath
+              << "] is not regular file." << std::endl;
     return false;
   }
 
