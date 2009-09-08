@@ -38,7 +38,7 @@ const std::string TRAIN_PATH           = "../tests/test_data/train";
 const std::string TEST_PATH            = "../tests/test_data/test_labeled";
 const unsigned int ZERO                = 0;
 const unsigned int TEST_NUM            = 100;
-unsigned int CLASSIFIER_TYPE_NUM = 1;
+unsigned int CLASSIFIER_TYPE_NUM       = 1;
 
 namespace broomie {
 
@@ -126,16 +126,12 @@ namespace broomie {
       if(classifierMethod == broomie::BAYES){
         ofs.write(broomie::METHOD_BAYES.c_str(),
                   strlen(broomie::METHOD_BAYES.c_str()));
-#ifdef USE_OLL
       } else if(classifierMethod == broomie::OLL){
         ofs.write(broomie::METHOD_OLL.c_str(),
                   strlen(broomie::METHOD_OLL.c_str()));
-#endif
-#ifdef USE_TINYSVM
       } else if(classifierMethod == broomie::TINYSVM){
         ofs.write(broomie::METHOD_TINYSVM.c_str(),
                   strlen(broomie::METHOD_TINYSVM.c_str()));
-#endif
       }
 
       ofs.close();
@@ -172,17 +168,12 @@ namespace broomie {
         std::vector<std::string> features = broomie::util::split(line, "\t");
         std::cout << features[0] << ":" << features[1] << std::endl;
         if(features[0] == DEFINE_METHOD_NAME){
-          // algorithm
           if(features[1] == broomie::METHOD_BAYES){
             classifierMethod = broomie::BAYES;
-#ifdef USE_OLL
           } else if(features[1] == broomie::METHOD_OLL){
             classifierMethod = broomie::OLL;
-#endif
-#ifdef USE_TINYSVM
           } else if(features[1] == broomie::METHOD_TINYSVM){
             classifierMethod = broomie::TINYSVM;
-#endif
           } else {
             std::cerr << "chose classifier method error: "
                       << features[1] <<  std::endl;

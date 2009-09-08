@@ -265,14 +265,10 @@ int main(int argc, char **argv)
   int classifierMethod = 0;
   if(method == broomie::METHOD_BAYES){
     classifierMethod = broomie::BAYES;
-#ifdef USE_OLL
   } else if(method == broomie::METHOD_OLL){
     classifierMethod = broomie::OLL;
-#endif
-#ifdef USE_TINYSVM
   } else if(method == broomie::METHOD_TINYSVM){
     classifierMethod = broomie::TINYSVM;
-#endif
   } else {
     std::cerr << "error: unknown classifier method [" <<
       method << "]" << std::endl;

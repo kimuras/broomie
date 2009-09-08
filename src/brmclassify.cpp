@@ -168,14 +168,10 @@ namespace broomie {
         if(features[0] == DEFINE_METHOD_NAME){
           if(features[1] == broomie::METHOD_BAYES){
             classifierMethod = broomie::BAYES;
-#ifdef USE_OLL
           } else if(features[1] == broomie::METHOD_OLL){
             classifierMethod = broomie::OLL;
-#endif
-#ifdef USE_TINYSVM
           } else if(features[1] == broomie::METHOD_TINYSVM){
             classifierMethod = broomie::TINYSVM;
-#endif
           } else {
             std::cout << features[1] << "\t" << broomie::METHOD_TINYSVM << std::endl;
             std::cerr << "chose classifier method error: "

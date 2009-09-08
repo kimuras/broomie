@@ -46,14 +46,10 @@ public:
       if(features[0] == broomie::DEFINE_METHOD_NAME){
         if(features[1] == broomie::METHOD_BAYES){
           method = broomie::BAYES;
-#ifdef USE_OLL
         } else if(features[1] == broomie::METHOD_OLL){
           method = broomie::OLL;
-#endif
-#ifdef USE_TINYSVM
         } else if(features[1] == broomie::METHOD_TINYSVM){
           method = broomie::TINYSVM;
-#endif
         } else {
           return false;
         }

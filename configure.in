@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 #AC_PREREQ([2.63])
-AC_INIT([broomie], [0.2.3], [bramtrain@gmail.com])
+AC_INIT([broomie], [0.2.4], [bramtrain@gmail.com])
 AC_CONFIG_SRCDIR([config.h.in])
 
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE(broomie, 0.2.3)
+AM_INIT_AUTOMAKE(broomie, 0.2.4)
 
 
 # FCGI option
