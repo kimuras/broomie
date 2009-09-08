@@ -132,7 +132,6 @@ namespace broomie {
     bool ok = true;
     if(getTrainingNum() > 0){
       TinySVM::Model *m = example.learn(param);
-      m->compress();
       if(!m->write(path.c_str())) ok = false;
       delete m;
     }

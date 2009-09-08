@@ -6,7 +6,6 @@
  * BSD license. See the COPYING file for full text.
  */
 
-#include <iomanip>// not need
 #include "brmutil.hpp"
 #include "brmalgorithm.hpp"
 
@@ -178,11 +177,6 @@ namespace broomie {
             classifierMethod = broomie::TINYSVM;
 #endif
           } else {
-#ifdef USE_TINYSVM
-            std::cout << "define" << std::endl;
-#else
-            std::cout << "not define" << std::endl;
-#endif
             std::cout << features[1] << "\t" << broomie::METHOD_TINYSVM << std::endl;
             std::cerr << "chose classifier method error: "
                       << features[1] <<  std::endl;

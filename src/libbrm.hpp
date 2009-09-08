@@ -47,8 +47,8 @@ namespace broomie {
 
 
   /*!
-    @brief Region for saving each classify result.
-    - name : The string object of class name.
+    @brief The region for saving each classify result.
+    - name : The string object for saving class name.
     - point : The point of classify result of the class.
    */
   struct Result {
@@ -80,7 +80,7 @@ namespace broomie {
   /*!
     @brief Feature object is used in order to save each feature element.
     - id : feature id. it is created automaticlally by this system.
-    - point : a point of the feature.
+    - point : point of the feature.
    */
   struct Feature {
     uint64_t id;
@@ -90,8 +90,8 @@ namespace broomie {
 
   /*!
     @brief FeatureWord object is region which saves each feature element.
-    - word : the string object of feature name.
-    - point : a point of the feature.
+    - word : The string object for saving name of feature.
+    - point : point of the feature.
    */
   struct FeatureWord {
     std::string word;
@@ -99,16 +99,16 @@ namespace broomie {
   };
 
 
-  /**
-   * Class having FeatureWord object.
-   * - Document object has feature elements which occur in document.
-   */
+  /*!
+    Document object is a Class having FeatureWord object.
+    - Document object has feature elements which occur in document.
+  */
   class Document {
 
 
   public:
     /*!
-     @brief Constructor of Document object.
+     @brief constructor of Document object.
      including Feature object elements.
      @param fNum : Num of feature elements.
     */

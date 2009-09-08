@@ -108,6 +108,7 @@ namespace broomie {
         } else if(cnt % 100 == 0){
           std::cout << ".";
         }
+        fflush(stdout);
       }
       std::cout << std::endl;
       ifs.close();
@@ -148,6 +149,9 @@ namespace broomie {
                 << std::endl;
       std::cerr << "    -c, --classifier=method     "
                 << "the choice of classifer. default classifier is `bayes'."
+                << std::endl;
+      std::cerr << "    method                 "
+                << "method can select [`svm', `oll', `bayes']."
                 << std::endl;
       std::cerr << "    classes                 "
                 << "the class names appear in training data. "

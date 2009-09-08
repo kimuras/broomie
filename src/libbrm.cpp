@@ -29,6 +29,7 @@ namespace broomie {
 
   int compareResult(Result* a, Result* b)
   {
+    assert(a && b);
     if(a->point < b->point){
       return 1;
     } else if(a->point > b->point){
